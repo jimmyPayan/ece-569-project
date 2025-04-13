@@ -1,0 +1,2 @@
+/bin/ar qc ../../lib/libopencv_core_pch_dephelp.a CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o
+/bin/ranlib ../../lib/libopencv_core_pch_dephelp.a
