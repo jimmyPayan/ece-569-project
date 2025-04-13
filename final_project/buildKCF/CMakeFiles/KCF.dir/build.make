@@ -53,10 +53,10 @@ RM = /opt/ohpc/pub/apps/cmake/3.28.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece569/final_project/KCFcpp
+CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/u20/jimmypayan/ece569/final_project/buildKCF
+CMAKE_BINARY_DIR = /home/u20/jimmypayan/ece-569-project/final_project/buildKCF
 
 # Include any dependencies generated for this target.
 include CMakeFiles/KCF.dir/depend.make
@@ -70,46 +70,46 @@ include CMakeFiles/KCF.dir/progress.make
 include CMakeFiles/KCF.dir/flags.make
 
 CMakeFiles/KCF.dir/src/fhog.cpp.o: CMakeFiles/KCF.dir/flags.make
-CMakeFiles/KCF.dir/src/fhog.cpp.o: /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.cpp
+CMakeFiles/KCF.dir/src/fhog.cpp.o: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp
 CMakeFiles/KCF.dir/src/fhog.cpp.o: CMakeFiles/KCF.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/KCF.dir/src/fhog.cpp.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/fhog.cpp.o -MF CMakeFiles/KCF.dir/src/fhog.cpp.o.d -o CMakeFiles/KCF.dir/src/fhog.cpp.o -c /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/KCF.dir/src/fhog.cpp.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/fhog.cpp.o -MF CMakeFiles/KCF.dir/src/fhog.cpp.o.d -o CMakeFiles/KCF.dir/src/fhog.cpp.o -c /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp
 
 CMakeFiles/KCF.dir/src/fhog.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/KCF.dir/src/fhog.cpp.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.cpp > CMakeFiles/KCF.dir/src/fhog.cpp.i
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp > CMakeFiles/KCF.dir/src/fhog.cpp.i
 
 CMakeFiles/KCF.dir/src/fhog.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/KCF.dir/src/fhog.cpp.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.cpp -o CMakeFiles/KCF.dir/src/fhog.cpp.s
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp -o CMakeFiles/KCF.dir/src/fhog.cpp.s
 
 CMakeFiles/KCF.dir/src/kcftracker.cpp.o: CMakeFiles/KCF.dir/flags.make
-CMakeFiles/KCF.dir/src/kcftracker.cpp.o: /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp
+CMakeFiles/KCF.dir/src/kcftracker.cpp.o: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp
 CMakeFiles/KCF.dir/src/kcftracker.cpp.o: CMakeFiles/KCF.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/KCF.dir/src/kcftracker.cpp.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/kcftracker.cpp.o -MF CMakeFiles/KCF.dir/src/kcftracker.cpp.o.d -o CMakeFiles/KCF.dir/src/kcftracker.cpp.o -c /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/KCF.dir/src/kcftracker.cpp.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/kcftracker.cpp.o -MF CMakeFiles/KCF.dir/src/kcftracker.cpp.o.d -o CMakeFiles/KCF.dir/src/kcftracker.cpp.o -c /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp
 
 CMakeFiles/KCF.dir/src/kcftracker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/KCF.dir/src/kcftracker.cpp.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp > CMakeFiles/KCF.dir/src/kcftracker.cpp.i
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp > CMakeFiles/KCF.dir/src/kcftracker.cpp.i
 
 CMakeFiles/KCF.dir/src/kcftracker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/KCF.dir/src/kcftracker.cpp.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp -o CMakeFiles/KCF.dir/src/kcftracker.cpp.s
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp -o CMakeFiles/KCF.dir/src/kcftracker.cpp.s
 
 CMakeFiles/KCF.dir/src/runtracker.cpp.o: CMakeFiles/KCF.dir/flags.make
-CMakeFiles/KCF.dir/src/runtracker.cpp.o: /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/runtracker.cpp
+CMakeFiles/KCF.dir/src/runtracker.cpp.o: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/runtracker.cpp
 CMakeFiles/KCF.dir/src/runtracker.cpp.o: CMakeFiles/KCF.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/KCF.dir/src/runtracker.cpp.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/runtracker.cpp.o -MF CMakeFiles/KCF.dir/src/runtracker.cpp.o.d -o CMakeFiles/KCF.dir/src/runtracker.cpp.o -c /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/runtracker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/KCF.dir/src/runtracker.cpp.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/KCF.dir/src/runtracker.cpp.o -MF CMakeFiles/KCF.dir/src/runtracker.cpp.o.d -o CMakeFiles/KCF.dir/src/runtracker.cpp.o -c /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/runtracker.cpp
 
 CMakeFiles/KCF.dir/src/runtracker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/KCF.dir/src/runtracker.cpp.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/runtracker.cpp > CMakeFiles/KCF.dir/src/runtracker.cpp.i
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/runtracker.cpp > CMakeFiles/KCF.dir/src/runtracker.cpp.i
 
 CMakeFiles/KCF.dir/src/runtracker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/KCF.dir/src/runtracker.cpp.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/runtracker.cpp -o CMakeFiles/KCF.dir/src/runtracker.cpp.s
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/runtracker.cpp -o CMakeFiles/KCF.dir/src/runtracker.cpp.s
 
 # Object files for target KCF
 KCF_OBJECTS = \
@@ -124,13 +124,13 @@ KCF: CMakeFiles/KCF.dir/src/fhog.cpp.o
 KCF: CMakeFiles/KCF.dir/src/kcftracker.cpp.o
 KCF: CMakeFiles/KCF.dir/src/runtracker.cpp.o
 KCF: CMakeFiles/KCF.dir/build.make
-KCF: /home/u20/jimmypayan/ece569/final_project/installOpenCV/lib/libopencv_core.so
-KCF: /home/u20/jimmypayan/ece569/final_project/installOpenCV/lib/libopencv_highgui.so
-KCF: /home/u20/jimmypayan/ece569/final_project/installOpenCV/lib/libopencv_imgproc.so
-KCF: /home/u20/jimmypayan/ece569/final_project/installOpenCV/lib/libopencv_imgcodecs.so.3.0
-KCF: /home/u20/jimmypayan/ece569/final_project/installOpenCV/lib/libopencv_videoio.so.3.0
+KCF: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/lib/libopencv_core.so
+KCF: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/lib/libopencv_highgui.so
+KCF: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/lib/libopencv_imgproc.so
+KCF: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/lib/libopencv_imgcodecs.so.3.0
+KCF: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/lib/libopencv_videoio.so.3.0
 KCF: CMakeFiles/KCF.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable KCF"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable KCF"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/KCF.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -142,6 +142,6 @@ CMakeFiles/KCF.dir/clean:
 .PHONY : CMakeFiles/KCF.dir/clean
 
 CMakeFiles/KCF.dir/depend:
-	cd /home/u20/jimmypayan/ece569/final_project/buildKCF && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/u20/jimmypayan/ece569/final_project/KCFcpp /home/u20/jimmypayan/ece569/final_project/KCFcpp /home/u20/jimmypayan/ece569/final_project/buildKCF /home/u20/jimmypayan/ece569/final_project/buildKCF /home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles/KCF.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/u20/jimmypayan/ece-569-project/final_project/buildKCF && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp /home/u20/jimmypayan/ece-569-project/final_project/buildKCF /home/u20/jimmypayan/ece-569-project/final_project/buildKCF /home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles/KCF.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/KCF.dir/depend
 

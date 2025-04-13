@@ -1,4 +1,4 @@
-# Install script for directory: /home/u20/jimmypayan/ece569/final_project/KCFcpp
+# Install script for directory: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/u20/jimmypayan/ece569/final_project/buildKCF/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/u20/jimmypayan/ece-569-project/final_project/buildKCF/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

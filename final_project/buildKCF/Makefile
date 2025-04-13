@@ -57,10 +57,10 @@ RM = /opt/ohpc/pub/apps/cmake/3.28.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece569/final_project/KCFcpp
+CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/u20/jimmypayan/ece569/final_project/buildKCF
+CMAKE_BINARY_DIR = /home/u20/jimmypayan/ece-569-project/final_project/buildKCF
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles /home/u20/jimmypayan/ece569/final_project/buildKCF//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles /home/u20/jimmypayan/ece-569-project/final_project/buildKCF//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/u20/jimmypayan/ece569/final_project/buildKCF/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/u20/jimmypayan/ece-569-project/final_project/buildKCF/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

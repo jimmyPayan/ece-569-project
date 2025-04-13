@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.cpp" "CMakeFiles/KCF.dir/src/fhog.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/fhog.cpp.o.d"
-  "/home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp" "CMakeFiles/KCF.dir/src/kcftracker.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/kcftracker.cpp.o.d"
-  "/home/u20/jimmypayan/ece569/final_project/KCFcpp/src/runtracker.cpp" "CMakeFiles/KCF.dir/src/runtracker.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/runtracker.cpp.o.d"
+  "/home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp" "CMakeFiles/KCF.dir/src/fhog.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/fhog.cpp.o.d"
+  "/home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp" "CMakeFiles/KCF.dir/src/kcftracker.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/kcftracker.cpp.o.d"
+  "/home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/runtracker.cpp" "CMakeFiles/KCF.dir/src/runtracker.cpp.o" "gcc" "CMakeFiles/KCF.dir/src/runtracker.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,12 +1,12 @@
 CMakeFiles/KCF.dir/src/kcftracker.cpp.o: \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.cpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.cpp \
  /usr/include/stdc-predef.h \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/kcftracker.hpp \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/tracker.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/opencv.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/cvdef.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/hal/defs.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/kcftracker.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/tracker.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/opencv.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvdef.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/hal/defs.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/limits.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/syslimits.h \
  /usr/include/limits.h /usr/include/features.h /usr/include/sys/cdefs.h \
@@ -124,26 +124,26 @@ CMakeFiles/KCF.dir/src/kcftracker.cpp.o: \
  /usr/include/c++/4.8.2/tuple /usr/include/c++/4.8.2/array \
  /usr/include/c++/4.8.2/stdexcept \
  /usr/include/c++/4.8.2/bits/uses_allocator.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/version.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/base.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/version.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/base.hpp \
  /usr/include/c++/4.8.2/climits \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/cvstd.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvstd.hpp \
  /usr/include/c++/4.8.2/cstddef /usr/include/c++/4.8.2/cstring \
  /usr/include/string.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/ptr.inl.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/hal.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/sse_utils.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/traits.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/matx.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/types.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/ptr.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/hal.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/sse_utils.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/traits.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/matx.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/types.hpp \
  /usr/include/c++/4.8.2/cfloat \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/float.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/mat.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/bufferpool.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/mat.inl.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/persistence.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/operations.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/cvstd.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/mat.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/bufferpool.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/mat.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/persistence.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/operations.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvstd.inl.hpp \
  /usr/include/c++/4.8.2/complex /usr/include/c++/4.8.2/sstream \
  /usr/include/c++/4.8.2/istream /usr/include/c++/4.8.2/ios \
  /usr/include/c++/4.8.2/bits/ios_base.h \
@@ -162,44 +162,44 @@ CMakeFiles/KCF.dir/src/kcftracker.cpp.o: \
  /usr/include/c++/4.8.2/bits/ostream.tcc \
  /usr/include/c++/4.8.2/bits/istream.tcc \
  /usr/include/c++/4.8.2/bits/sstream.tcc \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/utility.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/core_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/types_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/utility.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/core_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/types_c.h \
  /usr/include/assert.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/optim.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/imgproc.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/imgproc/imgproc_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/imgproc/types_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/photo.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/photo/photo_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/video.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/video/tracking.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/video/background_segm.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/video/tracking_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/features2d.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/flann/miniflann.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/flann/defines.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/flann/config.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/objdetect.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/objdetect/detection_based_tracker.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/objdetect/objdetect_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/optim.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgproc.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgproc/imgproc_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgproc/types_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/photo.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/photo/photo_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/video.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/video/tracking.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/video/background_segm.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/video/tracking_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/features2d.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/flann/miniflann.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/flann/defines.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/flann/config.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/objdetect.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/objdetect/detection_based_tracker.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/objdetect/objdetect_c.h \
  /usr/include/c++/4.8.2/deque /usr/include/c++/4.8.2/bits/stl_deque.h \
  /usr/include/c++/4.8.2/bits/deque.tcc \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/calib3d.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/core/affine.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/calib3d/calib3d_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/imgcodecs.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/videoio.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/highgui.hpp \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/highgui/highgui_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/imgcodecs/imgcodecs_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/videoio/videoio_c.h \
- /home/u20/jimmypayan/ece569/final_project/installOpenCV/include/opencv2/ml.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/calib3d.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/affine.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/calib3d/calib3d_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgcodecs.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/videoio.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/highgui.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/highgui/highgui_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgcodecs/imgcodecs_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/videoio/videoio_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/ml.hpp \
  /usr/include/c++/4.8.2/map /usr/include/c++/4.8.2/bits/stl_tree.h \
  /usr/include/c++/4.8.2/bits/stl_map.h \
  /usr/include/c++/4.8.2/bits/stl_multimap.h \
  /usr/include/c++/4.8.2/iostream \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/ffttools.hpp \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/recttools.hpp \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/fhog.hpp \
- /home/u20/jimmypayan/ece569/final_project/KCFcpp/src/labdata.hpp
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/ffttools.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/recttools.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/labdata.hpp
