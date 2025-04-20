@@ -54,7 +54,7 @@ RM = /opt/ohpc/pub/apps/cmake/3.28.3/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp
+CMAKE_SOURCE_DIR = /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/u20/jimmypayan/ece-569-project/final_project/buildKCF

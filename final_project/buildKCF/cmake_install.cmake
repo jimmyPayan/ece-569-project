@@ -1,4 +1,4 @@
-# Install script for directory: /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp
+# Install script for directory: /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

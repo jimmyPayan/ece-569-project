@@ -4,7 +4,7 @@
 # compile CXX with /bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include -I/home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src
+CXX_INCLUDES = -I/home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include -I/home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/src
 
 CXX_FLAGS =   -std=c++0x -O3
 

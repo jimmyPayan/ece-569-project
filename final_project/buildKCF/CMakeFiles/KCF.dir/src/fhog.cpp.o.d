@@ -1,7 +1,7 @@
 CMakeFiles/KCF.dir/src/fhog.cpp.o: \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.cpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/src/fhog.cpp \
  /usr/include/stdc-predef.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/src/fhog.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/src/fhog.hpp \
  /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-64.h \
@@ -11,12 +11,12 @@ CMakeFiles/KCF.dir/src/fhog.cpp.o: \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
  /usr/include/bits/stdio.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgproc/imgproc_c.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/imgproc/types_c.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/core_c.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/types_c.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvdef.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/hal/defs.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/imgproc/imgproc_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/imgproc/types_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/core_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/types_c.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/cvdef.h \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/hal/defs.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/limits.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -127,25 +127,25 @@ CMakeFiles/KCF.dir/src/fhog.cpp.o: \
  /usr/include/c++/4.8.2/bits/uses_allocator.h /usr/include/assert.h \
  /usr/include/string.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/float.h \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/version.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/base.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/version.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/base.hpp \
  /usr/include/c++/4.8.2/climits \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvstd.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/cvstd.hpp \
  /usr/include/c++/4.8.2/cstddef /usr/include/c++/4.8.2/cstring \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/ptr.inl.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/hal.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/sse_utils.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/traits.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/matx.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/types.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/ptr.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/hal.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/sse_utils.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/traits.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/matx.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/types.hpp \
  /usr/include/c++/4.8.2/cfloat \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/mat.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/bufferpool.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/mat.inl.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/persistence.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/operations.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/cvstd.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/mat.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/bufferpool.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/mat.inl.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/persistence.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/operations.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/cvstd.inl.hpp \
  /usr/include/c++/4.8.2/complex /usr/include/c++/4.8.2/sstream \
  /usr/include/c++/4.8.2/istream /usr/include/c++/4.8.2/ios \
  /usr/include/c++/4.8.2/bits/ios_base.h \
@@ -164,5 +164,5 @@ CMakeFiles/KCF.dir/src/fhog.cpp.o: \
  /usr/include/c++/4.8.2/bits/ostream.tcc \
  /usr/include/c++/4.8.2/bits/istream.tcc \
  /usr/include/c++/4.8.2/bits/sstream.tcc \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/utility.hpp \
- /home/u20/jimmypayan/ece-569-project/final_project/KCFcpp/../installOpenCV/include/opencv2/core/optim.hpp
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/utility.hpp \
+ /home/u20/jimmypayan/ece-569-project/final_project/KCF-CUDA/../installOpenCV/include/opencv2/core/optim.hpp
