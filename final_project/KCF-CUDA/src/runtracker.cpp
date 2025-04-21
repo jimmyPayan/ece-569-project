@@ -147,12 +147,10 @@ int main(int argc, char* argv[]){
 			tracker.init( Rect(xMin, yMin, width, height), frame );
 			rectangle( frame, Point( xMin, yMin ), Point( xMin+width, yMin+height), Scalar( 0, 255, 255 ), 1, 8 );
 			resultsFile << xMin << "," << yMin << "," << width << "," << height << endl;
-cout << nFrames << endl;
 		}
 		// Update
 		else {
 			result = tracker.update(frame);
-			cout << nFrames << " " << result << endl;
 			rectangle( frame, Point( result.x, result.y ), Point( result.x+result.width, result.y+result.height), Scalar( 0, 255, 255 ), 1, 8 );
 			resultsFile << result.x << "," << result.y << "," << result.width << "," << result.height << endl;
 		}
