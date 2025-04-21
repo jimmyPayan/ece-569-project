@@ -3,6 +3,8 @@ This repository contains the source code used to implement [PROJECT NAME HERE] f
 
 By Alex Caulin-Cardo, Jimmy Payan and Ryan Raad.
 
+# How to run code
+https://docs.google.com/document/d/1bjT08uGvNuZLdHp2kyEyDWNaWemjAks-kO6_FH82jMI/edit?tab=t.0
 
 # Current Document
 https://docs.google.com/document/d/1n42DK94z5ZjiW51dKExT3dsCKs2OGx2moKr-aaPwq_Q/edit?usp=sharing
