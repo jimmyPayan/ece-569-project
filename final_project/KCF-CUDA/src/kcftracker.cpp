@@ -86,6 +86,7 @@ the use of this software, even if advised of the possibility of such damage.
 #include "recttools.hpp"
 #include "fhog.hpp"
 #include "labdata.hpp"
+#include "gaussianCorrelation.cuh"
 #endif
 
 // Constructor
@@ -230,8 +231,10 @@ cv::Rect KCFTracker::update(cv::Mat image)
 cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 {
     using namespace FFTTools;
-
-    cv::Mat k = gaussianCorrelation(x, z);
+    //Serial Imp Commented Out:	
+    //cv::Mat k = gaussianCorrelation(x, z);
+    //CUDA imp included:
+    cv::Mat k = gaussianCorrelationGPU(x, z, size_patch[0], size_patch[1], size_patch[2], sigma);
     cv::Mat res = (real(fftd(complexMultiplication(_alphaf, fftd(k)), true)));
 
     //minMaxLoc only accepts doubles for the peak, and integer points for the coordinates
@@ -261,8 +264,11 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 void KCFTracker::train(cv::Mat x, float train_interp_factor)
 {
     using namespace FFTTools;
+    //Serial imp commented out
+    //cv::Mat k = gaussianCorrelation(x, x);
+    //CUDA imp included:
+    cv::Mat k = gaussianCorrelationGPU(x, x, size_patch[0], size_patch[1], size_patch[2], sigma);
 
-    cv::Mat k = gaussianCorrelation(x, x);
     cv::Mat alphaf = complexDivision(_prob, (fftd(k) + lambda));
     
     _tmpl = (1 - train_interp_factor) * _tmpl + (train_interp_factor) * x;
