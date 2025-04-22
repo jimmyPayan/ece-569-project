@@ -221,13 +221,13 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
     cvReleaseImage(&dx);
     cvReleaseImage(&dy);
 
-
+    /*
     free(w);
     free(nearest);
     
     free(r);
     free(alfa);
-
+    */
     return LATENT_SVM_OK;
 }
 
