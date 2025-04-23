@@ -216,8 +216,20 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
     }/*for(j = k / 2; j < k; j++)*/
 
     // ECE 569: Replaced the loop which is here on the main github (n^4 time complexity) with a 3D CUDA implementation, which has n time complexity per thread
-    
-    
+    // Commented out cudaMalloc()'s are passed by value
+    //cudaMalloc((void**) &sizeY, sizeof(int));
+    //cudaMalloc((void**) &sizeX, sizeof(int));
+    //cudaMalloc((void**) &k,     sizeof(int));
+    //cudaMalloc((void**) &height, sizeof(int);
+    //cudaMalloc((void**) &width, sizeof(int));
+    //cudaMalloc((void**) &numFeatures, sizeof(int));
+    cudaMalloc((void**) d_map, sizeof(float)*map->map.size());
+    //cudaMalloc((void**) &stringSize, sizeof(int));
+    cudaMalloc((void**) d_alfa, sizeof(int) * (width * height * 2));
+    cudaMalloc((void**) d_r, sizeof(float) * (width * height));
+    cudaMalloc((void**) d_w, sizeof(float) * (k * 2));
+    cudaMalloc((void**) d_nearest, sizeof(int) * k);
+
     cvReleaseImage(&dx);
     cvReleaseImage(&dy);
 
