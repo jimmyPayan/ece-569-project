@@ -223,23 +223,39 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
     //cudaMalloc((void**) &height, sizeof(int);
     //cudaMalloc((void**) &width, sizeof(int));
     //cudaMalloc((void**) &numFeatures, sizeof(int));
-    cudaMalloc((void**) d_map, sizeof(float)*map->map.size());
+    cudaMalloc((void**) &d_map, sizeof(float) * (sizeX * sizeY * (*map)->numFeatures));
     //cudaMalloc((void**) &stringSize, sizeof(int));
-    cudaMalloc((void**) d_alfa, sizeof(int) * (width * height * 2));
-    cudaMalloc((void**) d_r, sizeof(float) * (width * height));
-    cudaMalloc((void**) d_w, sizeof(float) * (k * 2));
-    cudaMalloc((void**) d_nearest, sizeof(int) * k);
+    cudaMalloc((void**) &d_alfa, sizeof(int) * (width * height * 2));
+    cudaMalloc((void**) &d_r, sizeof(float) * (width * height));
+    cudaMalloc((void**) &d_w, sizeof(float) * (k * 2));
+    cudaMalloc((void**) &d_nearest, sizeof(int) * k);
+
+    cudaMemcpy(d_map, map->map, sizeof(float) * (sizeX * sizeY * (*map)->numFeatures), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_alfa, alfa, sizeof(int) * (width * height * 2) , cudaMemcpyHostToDevice);
+    cudaMemcpy(d_r, r, sizeof(float) * (width * height), cudaMemcpyHostToDevice); 
+    cudaMemcpy(d_w, w, sizeof(float) * (k * 2), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_nearest, nearest, sizeof(int) * k, cudaMemcpyHostToDevice); 
+
+    // Total number of threads needed: sizeY * sizeX * k... max value of k is 4, which occurs during HOG. 1024 / 4 = 256, sqrt(256) = 16.
+    const dim3 threadsPerBlock(16, 16, k);
+    const dim3 blocksPerGrid(ceil((float)sizeY / 16), ceil((float)sizeX / 16));
+
+    kernel_n4 <<< blocksPerGrid, threadsPerBlock >>> (sizeY, sizeX, k, height, width, (*map)->numFeatures, (*map)->map, stringSize, alfa, r, w, nearest);
 
     cvReleaseImage(&dx);
     cvReleaseImage(&dy);
 
-    /*
+    cudaFree(d_map);
+    cudaFree(d_alfa);
+    cudaFree(d_r);
+    cudaFree(d_w);
+    cudaFree(d_nearest);
     free(w);
     free(nearest);
     
     free(r);
     free(alfa);
-    */
+    
     return LATENT_SVM_OK;
 }
 
