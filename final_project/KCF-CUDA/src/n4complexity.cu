@@ -82,7 +82,7 @@ if (i < sizeY && j < sizeX) {
 
 
 void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *map, int stringSize, int *alfa, float *r, float *w, int *nearest){
-	printf("Running kernel_n4.\n");
+	//printf("Running kernel_n4.\n");
     float *d_map, *d_r, *d_w;
     int *d_alfa, *d_nearest;
 // Commented out cudaMalloc()'s are passed by value
@@ -109,7 +109,7 @@ void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatu
     const dim3 threadsPerBlock(32,32);
     const dim3 blocksPerGrid(ceil((float)sizeY / 32), ceil((float)sizeX / 32));
 
-    kernel_n4<<<blocksPerGrid,threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures, map, stringSize, alfa, r, w, nearest);
+    kernel_n4<<<blocksPerGrid,threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures, d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
 
     cudaMemcpy(map, d_map, sizeof(float) * (sizeX * sizeY * numFeatures), cudaMemcpyDeviceToHost);
     cudaMemcpy(alfa, d_alfa, sizeof(int) * (width * height * 2) , cudaMemcpyDeviceToHost);
