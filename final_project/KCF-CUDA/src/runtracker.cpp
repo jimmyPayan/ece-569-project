@@ -60,12 +60,12 @@ int main(int argc, char* argv[]){
 	// Path to list.txt
 	ifstream listFile;
 	string fileName = "config/image.txt";
-  	listFile.open(fileName);
+  	listFile.open(fileName.c_str());
 
   	// Read groundtruth for the 1st frame
   	ifstream groundtruthFile;
 	string groundtruth = "config/region.txt";
-  	groundtruthFile.open(groundtruth);
+  	groundtruthFile.open(groundtruth.c_str());
 
   	string firstLine;
   	getline(groundtruthFile, firstLine);
@@ -108,14 +108,14 @@ int main(int argc, char* argv[]){
 	// Read Images
 	ifstream listFramesFile;
 	string listFrames = "config/image.txt";
-	listFramesFile.open(listFrames);
+	listFramesFile.open(listFrames.c_str());
 	string frameName;
 
 
 	// Write Results
 	ofstream resultsFile;
 	string resultsPath = "config/outputs/output.txt";
-	resultsFile.open(resultsPath);
+	resultsFile.open(resultsPath.c_str());
 	resultsFile << "Hello World!\n";
 	// Frame counter
 	int nFrames = 0;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]){
 
 	fstream timingFile;
 	string timingPath = "config/outputs/timingBuffer.txt";
-	timingFile.open(timingPath, ios::out);
+	timingFile.open(timingPath.c_str(), ios::out);
 	clock_t t = clock();
 	
 	//Match 1k video... not sure why HPC behaves strangely here... mess with window values. Keep 16x9 aspect ratio!
@@ -175,7 +175,7 @@ int main(int argc, char* argv[]){
 	ofstream totalTimingFile;
 	string timingBuffer;
 	totalTimingFile.open("config/outputs/timing.txt");
-	timingFile.open(timingPath, ios::in);
+	timingFile.open(timingPath.c_str(), ios::in);
 	totalTimingFile << "Total execution time: " << fixed << setprecision(1)  << totalTime << " ms.\n";
 	
 	while (getline(timingFile, timingBuffer)) {
