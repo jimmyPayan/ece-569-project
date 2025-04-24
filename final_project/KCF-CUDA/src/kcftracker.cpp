@@ -89,6 +89,14 @@ the use of this software, even if advised of the possibility of such damage.
 #include "gaussianCorrelation.cuh"
 #endif
 
+#include <chrono>
+#include <iostream>
+
+static double time_gaussian = 0.0;
+static double time_getFeatures = 0.0;
+static double time_train = 0.0;
+static double time_detect = 0.0;
+
 // Constructor
 KCFTracker::KCFTracker(bool hog, bool fixed_window, bool multiscale, bool lab)
 {
@@ -230,6 +238,8 @@ cv::Rect KCFTracker::update(cv::Mat image)
 // Detect object in the current frame.
 cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 {
+ //timing start detect
+    auto start = std::chrono::high_resolution_clock::now();
     using namespace FFTTools;
     //Serial Imp Commented Out:	
     //cv::Mat k = gaussianCorrelation(x, z);
@@ -256,6 +266,9 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 
     p.x -= (res.cols) / 2;
     p.y -= (res.rows) / 2;
+//timing end detect
+    auto end = std::chrono::high_resolution_clock::now();
+    time_detect += std::chrono::duration<double>(end - start).count();
 
     return p;
 }
@@ -263,6 +276,8 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 // train tracker with a single image
 void KCFTracker::train(cv::Mat x, float train_interp_factor)
 {
+  //timing start train
+auto start = std::chrono::high_resolution_clock::now();
     using namespace FFTTools;
     //Serial imp commented out
     //cv::Mat k = gaussianCorrelation(x, x);
@@ -273,7 +288,9 @@ void KCFTracker::train(cv::Mat x, float train_interp_factor)
     
     _tmpl = (1 - train_interp_factor) * _tmpl + (train_interp_factor) * x;
     _alphaf = (1 - train_interp_factor) * _alphaf + (train_interp_factor) * alphaf;
-
+//timing end train
+    auto end = std::chrono::high_resolution_clock::now();
+    time_train += std::chrono::duration<double>(end - start).count();
 
     /*cv::Mat kf = fftd(gaussianCorrelation(x, x));
     cv::Mat num = complexMultiplication(kf, _prob);
@@ -290,6 +307,10 @@ void KCFTracker::train(cv::Mat x, float train_interp_factor)
 // Evaluates a Gaussian kernel with bandwidth SIGMA for all relative shifts between input images X and Y, which must both be MxN. They must    also be periodic (ie., pre-processed with a cosine window).
 cv::Mat KCFTracker::gaussianCorrelation(cv::Mat x1, cv::Mat x2)
 {
+  //timing start gaussianCorrelation
+  //should be 0 here bc not called
+    auto start = std::chrono::high_resolution_clock::now();
+
     using namespace FFTTools;
     cv::Mat c = cv::Mat( cv::Size(size_patch[1], size_patch[0]), CV_32F, cv::Scalar(0) );
     // HOG features
@@ -320,6 +341,9 @@ cv::Mat KCFTracker::gaussianCorrelation(cv::Mat x1, cv::Mat x2)
 
     cv::Mat k;
     cv::exp((-d / (sigma * sigma)), k);
+    //timing end gaussian
+auto end = std::chrono::high_resolution_clock::now();
+    time_gaussian += std::chrono::duration<double>(end - start).count();
     return k;
 }
 
@@ -347,6 +371,8 @@ cv::Mat KCFTracker::createGaussianPeak(int sizey, int sizex)
 // Obtain sub-window from image, with replication-padding and extract features
 cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scale_adjust)
 {
+  //timing start getFeatures
+    auto start = std::chrono::high_resolution_clock::now();
     cv::Rect extracted_roi;
 
     float cx = _roi.x + _roi.width / 2;
@@ -481,6 +507,9 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
         createHanningMats();
     }
     FeaturesMap = hann.mul(FeaturesMap);
+    //timing end getFeatures
+auto end = std::chrono::high_resolution_clock::now();
+    time_getFeatures += std::chrono::duration<double>(end - start).count();
     return FeaturesMap;
 }
     
@@ -522,4 +551,12 @@ float KCFTracker::subPixelPeak(float left, float center, float right)
         return 0;
     
     return 0.5 * (right - left) / divisor;
+}
+//TIMING PRINT STATEMENTS
+void printProfilingSummary() {
+    std::cout << "\n--- Function Timing Summary ---\n";
+    std::cout << "Total time spent in getFeatures(): " << time_getFeatures << " s\n";
+    std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
+    std::cout << "Total time spent in train(): " << time_train << " s\n";
+    std::cout << "Total time spent in detect(): " << time_detect << " s\n";
 }
