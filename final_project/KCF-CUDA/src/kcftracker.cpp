@@ -86,6 +86,7 @@ the use of this software, even if advised of the possibility of such damage.
 #include "recttools.hpp"
 #include "fhog.hpp"
 #include "labdata.hpp"
+#include "normalizeAndTruncate.cuh"
 #endif
 
 // Constructor
