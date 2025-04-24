@@ -407,7 +407,7 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
         IplImage z_ipl = z;
         CvLSVMFeatureMapCaskade *map;
         getFeatureMaps(&z_ipl, cell_size, &map);
-        normalizeAndTruncate(map,0.2f);
+        normalizeAndTruncateNaive(map,0.2f);
         PCAFeatureMaps(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;
