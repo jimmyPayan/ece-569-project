@@ -191,4 +191,5 @@ int main(int argc, char* argv[]){
 	resultsFile.close();
 	listFile.close();
 	totalTimingFile.close();
+	printProfilingSummary();
 	}
