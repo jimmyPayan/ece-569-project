@@ -1,6 +1,7 @@
 // Ryan Raad 2025
 // normalizeAndTruncate.cu
 // most naive Cuda implementation, single pass, single kernel, worst speedup
+#include "normalizeAndTruncate.cuh"
 #include <cuda_runtime.h>
 #include <cmath>
 
