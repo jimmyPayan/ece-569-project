@@ -87,6 +87,7 @@ the use of this software, even if advised of the possibility of such damage.
 #include "fhog.hpp"
 #include "labdata.hpp"
 #include "normalizeAndTruncate.cuh"
+#include "PCAFeatureMaps.cuh"
 #endif
 //timing includes
 #include <chrono>
@@ -434,7 +435,7 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
         CvLSVMFeatureMapCaskade *map;
         getFeatureMaps(&z_ipl, cell_size, &map);
         normalizeAndTruncateGPU(map,0.2f);
-        PCAFeatureMaps(map);
+        PCAFeatureMapsGPU(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;
         size_patch[2] = map->numFeatures;
