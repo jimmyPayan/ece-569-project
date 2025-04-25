@@ -1,108 +1,135 @@
 // Ryan Raad 2025
+// V1 optimization multi kernel
 // normalizeAndTruncate.cu
-// most naive Cuda implementation, single pass, single kernel, worst speedup
-
 #include "normalizeAndTruncate.cuh"
-#include "fhog.hpp"           // for CvLSVMFeatureMapCaskade, NUM_SECTOR, LATENT_SVM_OK
+#include "fhog.hpp"           // CvLSVMFeatureMapCaskade, NUM_SECTOR, LATENT_SVM_OK
 #include <cuda_runtime.h>
 #include <cmath>
-#include <cstdio>             // for printf
-#include <cstdlib>            // for malloc/free
+#include <cstdio>
+#include <cstdlib>
 
 #define CUDA_CHECK(err) \
   if ((err) != cudaSuccess) { \
-    fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(err)); \
+    fprintf(stderr, "[CUDA ERROR] %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
     exit(EXIT_FAILURE); \
   }
 
-// -----------------------------------------------------------------------------
-//  Kernel: normalizeAndTruncateNaiveKernel
-// -----------------------------------------------------------------------------
-__global__ void normalizeAndTruncateNaiveKernel(
+// Kernel 1: compute per-cell squared‐norms
+__global__ void computePartOfNorm(
     const float* __restrict__ mapData,
-    float*       __restrict__ outData,
-    int oldSizeX, int oldSizeY,
-    float alfa)
+    float*       __restrict__ partOfNorm,
+    int oldSizeX, int oldSizeY)
 {
-    int idx       = blockIdx.x*blockDim.x + threadIdx.x;
-    int newSizeX  = oldSizeX - 2;
-    int newSizeY  = oldSizeY - 2;
-    int cells     = newSizeX * newSizeY;
-    const int p   = NUM_SECTOR;
-    const int xp  = NUM_SECTOR*3;
-    const int pp  = NUM_SECTOR*12;
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int total = oldSizeX * oldSizeY;
+    const int p = NUM_SECTOR;
+    if (idx < total) {
+        int base = idx * (p * 3);
+        float sum = 0.0f;
+        #pragma unroll
+        for (int j = 0; j < p; ++j) {
+            float v = mapData[base + j];
+            sum += v * v;
+        }
+        partOfNorm[idx] = sum;
+    }
+}
+
+// Kernel 2: normalize & clamp each HOG block
+__global__ void normalizeAndClamp(
+    const float* __restrict__ mapData,
+    const float* __restrict__ partOfNorm,
+    float*       __restrict__ newData,
+    int oldSizeX, int oldSizeY)
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    int newSizeX = oldSizeX - 2;
+    int newSizeY = oldSizeY - 2;
+    int cells    = newSizeX * newSizeY;
+    const int p  = NUM_SECTOR;
+    const int xp = p * 3;
+    const int pp = p * 12;
+    const float eps = 1e-6f;
 
     if (idx < cells) {
-        int j = (idx % newSizeX) + 1;   // 1…oldSizeX–2
-        int i = (idx / newSizeX) + 1;   // 1…oldSizeY–2
+        int j = (idx % newSizeX) + 1;
+        int i = (idx / newSizeX) + 1;
 
-        // compute the four cell‐norms on the fly
-        float sum0=0, sum1=0, sum2=0, sum3=0;
-        int offsets[4] = {
-          ( i   * oldSizeX +  j   )*xp,
-          ( i   * oldSizeX + (j+1))*xp,
-          ((i+1)* oldSizeX +  j   )*xp,
-          ((i+1)* oldSizeX + (j+1))*xp
-        };
-        for (int c=0; c<p; ++c){
-          float v = mapData[offsets[0]+c]; sum0 += v*v;
-          v       = mapData[offsets[1]+c]; sum1 += v*v;
-          v       = mapData[offsets[2]+c]; sum2 += v*v;
-          v       = mapData[offsets[3]+c]; sum3 += v*v;
-        }
-        float norm = sqrtf(sum0+sum1+sum2+sum3 + 1e-6f);
+        // gather 4 neighbouring norms
+        int off0 = i     * oldSizeX +  j;
+        int off1 = i     * oldSizeX + (j+1);
+        int off2 = (i+1) * oldSizeX +  j;
+        int off3 = (i+1) * oldSizeX + (j+1);
+        float n0 = partOfNorm[off0];
+        float n1 = partOfNorm[off1];
+        float n2 = partOfNorm[off2];
+        float n3 = partOfNorm[off3];
+        float norm = sqrtf(n0 + n1 + n2 + n3 + eps);
 
-        // normalize & clamp
+        // pointers into flat arrays
+        int inBase  = off0 * xp;
         int outBase = idx * pp;
-        for (int c=0; c<pp; ++c) {
-          float val = mapData[offsets[0] + c] / norm;
-          outData[outBase + c] = (val > alfa ? alfa : val);
+
+        // normalize first p channels and next 2p channels
+        for (int c = 0; c < p;    ++c) newData[outBase +     c] = mapData[inBase +     c] / norm;
+        for (int c = 0; c < 2*p;  ++c) newData[outBase + 4*p + c] = mapData[inBase + p + c] / norm;
+
+        // clamp all pp channels
+        for (int c = 0; c < pp;   ++c) {
+            float v = newData[outBase + c];
+            newData[outBase + c] = (v > alfa ? alfa : v);
         }
     }
 }
 
-// -----------------------------------------------------------------------------
-//  Host wrapper: normalizeAndTruncateNaive()
-// -----------------------------------------------------------------------------
-int normalizeAndTruncateNaive(CvLSVMFeatureMapCaskade* map, float alfa)
+// Host wrapper
+int normalizeAndTruncateGPU(CvLSVMFeatureMapCaskade* map, const float alfa)
 {
-    // 1) Gather sizes
     int oldSizeX   = map->sizeX;
     int oldSizeY   = map->sizeY;
     const int p    = NUM_SECTOR;
-    const int xp   = p*3;
-    const int pp   = p*12;
+    const int xp   = p * 3;
+    const int pp   = p * 12;
     int totalCells = oldSizeX * oldSizeY;
     int newSizeX   = oldSizeX - 2;
     int newSizeY   = oldSizeY - 2;
     int newCells   = newSizeX * newSizeY;
 
-    size_t mapBytes = sizeof(float) * totalCells * xp;
+    size_t inBytes  = sizeof(float) * totalCells * xp;
+    size_t partBytes= sizeof(float) * totalCells;
     size_t outBytes = sizeof(float) * newCells   * pp;
 
-    // 2) Allocate & copy input map to device
-    float *d_map, *d_out;
-    CUDA_CHECK(cudaMalloc(&d_map, mapBytes));
-    CUDA_CHECK(cudaMemcpy(d_map, map->map, mapBytes, cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMalloc(&d_out, outBytes));
+    // alloc + copy
+    float *d_map, *d_part, *d_new;
+    CUDA_CHECK(cudaMalloc(&d_map,   inBytes));
+    CUDA_CHECK(cudaMemcpy(d_map, map->map, inBytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMalloc(&d_part, partBytes));
+    CUDA_CHECK(cudaMalloc(&d_new,  outBytes));
 
-    // 3) Launch kernel
-    int threads = 256;
-    int blocks1 = (newCells + threads - 1) / threads;
-    normalizeAndTruncateNaiveKernel<<<blocks1, threads>>>(d_map, d_out, oldSizeX, oldSizeY, alfa);
+    // launch computePartOfNorm
+    int t1 = 256, b1 = (totalCells + t1 -1)/t1;
+    computePartOfNorm<<<b1,t1>>>(d_map, d_part, oldSizeX, oldSizeY);
+    CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 
-    // 4) Copy result back
-    float* h_out = (float*)malloc(outBytes);
-    CUDA_CHECK(cudaMemcpy(h_out, d_out, outBytes, cudaMemcpyDeviceToHost));
+    // launch normalizeAndClamp
+    int t2 = 256, b2 = (newCells + t2 -1)/t2;
+    normalizeAndClamp<<<b2,t2>>>(d_map, d_part, d_new, oldSizeX, oldSizeY);
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
 
-    // 5) Clean up device
+    // copy back
+    float* h_new = (float*)malloc(outBytes);
+    CUDA_CHECK(cudaMemcpy(h_new, d_new, outBytes, cudaMemcpyDeviceToHost));
+
+    // cleanup GPU
     cudaFree(d_map);
-    cudaFree(d_out);
+    cudaFree(d_part);
+    cudaFree(d_new);
 
-    // 6) Replace host map with new data
+    // update host map
     free(map->map);
-    map->map         = h_out;
+    map->map         = h_new;
     map->sizeX       = newSizeX;
     map->sizeY       = newSizeY;
     map->numFeatures = pp;
