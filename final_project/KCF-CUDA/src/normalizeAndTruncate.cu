@@ -114,7 +114,7 @@ int normalizeAndTruncateGPU(CvLSVMFeatureMapCaskade* map, const float alfa)
 
     // launch normalizeAndClamp
     int t2 = 256, b2 = (newCells + t2 -1)/t2;
-    normalizeAndClamp<<<b2,t2>>>(d_map, d_part, d_new, oldSizeX, oldSizeY);
+    normalizeAndClamp<<<b2,t2>>>(d_map, d_part, d_new, oldSizeX, oldSizeY, alfa);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 
