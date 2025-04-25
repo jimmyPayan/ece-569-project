@@ -16,7 +16,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char* argv[]){
-  cout << "ECE569 v1 normalizeAndTruncate Cuda optimization. 2 Kernel version" << endl;
+  cout << "ECE569 v1 normalizeAndTruncate and PCAFeatureMaps Cuda optimization." << endl;
   cout << "Operating at " << fixed << CLOCKS_PER_SEC << " ticks per second (important for time.h)." << endl;
   float tick_rate = CLOCKS_PER_SEC / 1000;
 
