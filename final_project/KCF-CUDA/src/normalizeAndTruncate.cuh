@@ -7,6 +7,6 @@
 #include "fhog.hpp"  // for CvLSVMFeatureMapCaskade, NUM_SECTOR, etc.
 
 // Host‐callable entry point
-int normalizeAndTruncateNaive(CvLSVMFeatureMapCaskade* map, const float alfa);
+int normalizeAndTruncateGPU(CvLSVMFeatureMapCaskade* map, const float alfa);
 
 #endif // NORMALIZE_AND_TRUNCATE_CUH
