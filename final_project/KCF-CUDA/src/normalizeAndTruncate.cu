@@ -40,7 +40,7 @@ __global__ void normalizeAndClamp(
     const float* __restrict__ mapData,
     const float* __restrict__ partOfNorm,
     float*       __restrict__ newData,
-    int oldSizeX, int oldSizeY)
+    int oldSizeX, int oldSizeY, float alfa)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     int newSizeX = oldSizeX - 2;
