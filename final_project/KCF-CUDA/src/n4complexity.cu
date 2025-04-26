@@ -1,17 +1,36 @@
 #define NUM_SECTOR 9
+#define BLOCK_DIM 16
 #include <stdio.h>
 
-// Naive 3D Approach first. Using atomics excessively, so we might not see speedup at all.  No memory optimizations yet, no removals of if() statements
+// First optimization: Proper block dimensions (32x32 -> 16x16). Preparatory optimization that resulted in -10s from singlescale and -2s from Multiscale. Done so that shared memory (optimization 2) will not be > 48 kB.
+
+// Still using atomics excessively, so we might not see speedup at all.  No removals of if() statements
 // k seems to be passed in as cell_size, which is set to 4... for loop should be okay.
 
 __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w,  int *d_nearest) {
 	
+	// Allocate shared memory
+	/*__shared__ float shared_w[k * 2];
+	__shared__ int shared_nearest[k];
+	__shared__ float shared_blockMap[BLOCK_DIM * BLOCK_DIM * NUM_SECTOR * 12];
+
+*/
+
 	// Use thread IDs as iterators, same names as joaofaro to keep me sane while debugging
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
-	//int ii = blockIdx.z * blockDim.z + threadIdx.z;
 	
+	/*
+	if (i < k * 2)
+	shared_w [i] = w[i];
+
+	if (i < k)
+	shared_nearest[k] = nearest[k];
+
+	if ((i < 32) && (j < 32) && (
+	*/
 	int d;
+
 if (i < sizeY && j < sizeX) {
 	for(int ii = 0; ii < k; ii++) { /////////////////////////////////////
 	for(int jj = 0; jj < k; jj++)
@@ -106,8 +125,8 @@ void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatu
     cudaMemcpy(d_nearest, nearest, sizeof(int) * k, cudaMemcpyHostToDevice); 
 
     // Total number of threads needed: sizeY * sizeX * k... max value of k is 4, which occurs during HOG. 1024 / 4 = 256, sqrt(256) = 16.
-    const dim3 threadsPerBlock(32,32);
-    const dim3 blocksPerGrid(ceil((float)sizeY / 32), ceil((float)sizeX / 32));
+    const dim3 threadsPerBlock(BLOCK_DIM, BLOCK_DIM);
+    const dim3 blocksPerGrid(ceil((float)sizeY / BLOCK_DIM), ceil((float)sizeX / 32));
 
     kernel_n4<<<blocksPerGrid,threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures, d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
 

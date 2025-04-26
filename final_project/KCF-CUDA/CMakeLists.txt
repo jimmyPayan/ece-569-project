@@ -2,6 +2,7 @@
 
 cmake_minimum_required(VERSION 3.8)
 project(KCF LANGUAGES C CXX CUDA)
+set(CMAKE_CXX_STANDARD 11)
 
 set(OpenCV_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../installOpenCV/include")
 #set(OpenCV_LIB_DIR "$ENV{HOME}/ece569/final_project/installOpenCV/lib")
