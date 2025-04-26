@@ -20,6 +20,7 @@ set(OpenCV_LIBS
 include_directories(${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIB_DIR})
 include_directories(src)
+include_directories(/opt/ohpc/pub/apps/cuda/11.0/include)
 
 set(CMAKE_CUDA_ARCHITECTURES 60 70 75 80)
 

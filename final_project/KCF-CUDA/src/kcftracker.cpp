@@ -176,7 +176,12 @@ void KCFTracker::init(const cv::Rect &roi, cv::Mat image)
     _alphaf = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
     //_num = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
     //_den = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
+        // create the workspace for 1 memAlloc and 1 free
+
+    initCUDAMem(ws, size_patch[0], size_patch[1], size_patch[2]);
+
     train(_tmpl, 1.0); // train with initial frame
+
  }
 // Update position based on the new frame
 cv::Rect KCFTracker::update(cv::Mat image)
@@ -245,7 +250,7 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
     //cv::Mat k = gaussianCorrelation(x, z);
     //CUDA imp included:
     auto start1 = std::chrono::high_resolution_clock::now();
-    cv::Mat k = gaussianCorrelationGPU(x, z, size_patch[0], size_patch[1], size_patch[2], sigma);
+    cv::Mat k = gaussianCorrelationGPU(x, z, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
     auto end1 = std::chrono::high_resolution_clock::now();
     time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
     cv::Mat res = (real(fftd(complexMultiplication(_alphaf, fftd(k)), true)));
@@ -286,7 +291,7 @@ auto start = std::chrono::high_resolution_clock::now();
     //cv::Mat k = gaussianCorrelation(x, x);
     //CUDA imp included:
     auto start1 = std::chrono::high_resolution_clock::now();
-    cv::Mat k = gaussianCorrelationGPU(x, x, size_patch[0], size_patch[1], size_patch[2], sigma);
+    cv::Mat k = gaussianCorrelationGPU(x, x, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
 
     auto end1 = std::chrono::high_resolution_clock::now();
     time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
@@ -566,4 +571,8 @@ void printProfilingSummary() {
     std::cout << "Total time spent in train(): " << time_train << " s\n";
     std::cout << "Total time spent in detect(): " << time_detect << " s\n";
     std::cout << "Total time spent in gaussianCorrelationGPU(): " <<time_cudaGaus << "s\n";
+}
+KCFTracker::~KCFTracker()
+{
+    freeCUDAMem(ws);
 }
