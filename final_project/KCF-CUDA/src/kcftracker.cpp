@@ -95,6 +95,7 @@ static double time_gaussian = 0.0;
 static double time_getFeatures = 0.0;
 static double time_train = 0.0;
 static double time_detect = 0.0;
+static double time_normAndTruncate = 0.0;
 
 // Constructor
 KCFTracker::KCFTracker(bool hog, bool fixed_window, bool multiscale, bool lab)
@@ -433,7 +434,10 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
         IplImage z_ipl = z;
         CvLSVMFeatureMapCaskade *map;
         getFeatureMaps(&z_ipl, cell_size, &map);
+	auto start2 = std::chrono::high_resolution_clock::now();
         normalizeAndTruncateNaive(map,0.2f);
+	auto end2 = std::chrono::high_resolution_clock::now();
+	time_normAndTruncate += std::chrono::duration<double>(end2 - start2).count();
         PCAFeatureMaps(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;
@@ -554,4 +558,5 @@ void printProfilingSummary() {
     std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
     std::cout << "Total time spent in train(): " << time_train << " s\n";
     std::cout << "Total time spent in detect(): " << time_detect << " s\n";
+    std::cout << "Total time spent in normalizeAndTruncate(): " << time_normAndTruncate << " s\n";
 }

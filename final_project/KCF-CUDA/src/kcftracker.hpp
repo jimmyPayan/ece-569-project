@@ -149,3 +149,5 @@ private:
     bool _hogfeatures;
     bool _labfeatures;
 };
+
+void printProfilingSummary();

@@ -90,7 +90,7 @@ int normalizeAndTruncateNaive(CvLSVMFeatureMapCaskade* map, float alfa)
     int threads = 256;
     int blocks1 = (newCells + threads - 1) / threads;
     normalizeAndTruncateNaiveKernel<<<blocks1, threads>>>(d_map, d_out, oldSizeX, oldSizeY, alfa);
-    CUDA_CHECK(cudaDeviceSynchronize());
+   // CUDA_CHECK(cudaDeviceSynchronize());
 
     // 4) Copy result back
     float* h_out = (float*)malloc(outBytes);
