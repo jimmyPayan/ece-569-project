@@ -94,6 +94,7 @@ static double time_gaussian = 0.0;
 static double time_getFeatures = 0.0;
 static double time_train = 0.0;
 static double time_detect = 0.0;
+static double time_getFeatureMaps = 0.0;
 
 // Constructor
 KCFTracker::KCFTracker(bool hog, bool fixed_window, bool multiscale, bool lab)
@@ -431,8 +432,16 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
     if (_hogfeatures) {
         IplImage z_ipl = z;
         CvLSVMFeatureMapCaskade *map;
-        getFeatureMaps(&z_ipl, cell_size, &map);
-        normalizeAndTruncate(map,0.2f);
+    
+    //timing start getFeatureMaps
+    auto start1 = std::chrono::high_resolution_clock::now();
+
+	getFeatureMaps(&z_ipl, cell_size, &map);
+
+    auto end1 = std::chrono::high_resolution_clock::now();
+    time_getFeatureMaps += std::chrono::duration<double>(end1 - start1).count();
+    
+	normalizeAndTruncate(map,0.2f);
         PCAFeatureMaps(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;
@@ -549,9 +558,9 @@ float KCFTracker::subPixelPeak(float left, float center, float right)
 //TIMING PRINT STATEMENTS
 void printProfilingSummary() {
     std::cout << "\n--- Function Timing Summary ---\n";
-    std::cout << "Total time spent in getFeatures(): " << time_getFeatures << " s\n";
+    std::cout << "Total time spent in getFeatures():" << time_getFeatures << " s\n";
     std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
     std::cout << "Total time spent in train(): " << time_train - time_getFeatures << " s\n";
     std::cout << "Total time spent in detect(): " << time_detect - time_getFeatures  << " s\n";
-    std::cout << "Total execution time: " << time_gaussian + time_train + time_detect - time_getFeatures << " s\n";
+    std::cout << "Total time spent in getFeatureMaps():" << time_getFeatureMaps  << " s\n";
 }
