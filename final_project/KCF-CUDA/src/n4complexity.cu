@@ -17,8 +17,6 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
 	__shared__ int shared_nearest[K_MAX];
 	__shared__ float shared_blockMap[BLOCK_DIM * BLOCK_DIM * FEATURES_MAX];
 
-	/* Timing to profile individual functions... run using print statements to profile how many GPU cycles it takes for one iteration... then convert using clockRate returned by cudaDeviceProperties to convert to seconds per iteration... then multiply by number of iterations
-*/
 	// Use thread IDs as iterators, same names as joaofaro to keep me sane while debugging
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
