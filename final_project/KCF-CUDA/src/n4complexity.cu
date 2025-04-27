@@ -13,7 +13,9 @@
 
 /* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3
 
-	OPTIMIZATION NAME: 16x16 Shared Memory	
+	OPTIMIZATION NAME: 16x16 Shared Memory
+
+	MULTISCALE
 	Thread 0,0 of Block 0,0 took 27266 total cycles. It required:
 	~ 1022 cycles to write to shared memory.
 	~ 14089 cycles to compute data.
@@ -29,6 +31,22 @@
 	Total time spent in train(): -1.8 s
 	Total time spent in detect(): -1.5 s
 	Total execution time: -0.7 s
+
+	SINGLESCALE
+	Thread 0,0 of Block 0,0 took 83465 total cycles. It required:
+	~ 1390 cycles to write to shared memory.
+	~ 28895 cycles to compute data.
+	~ 52642 cycles to convert shared memory to global memory.
+	538 cycles unaccounted for.
+	Total execution time: 96410.0 ms.
+
+	--- Function Timing Summary ---
+	Total time spent in getFeatures(): 25.2 s
+	Total time spent in gaussianCorrelation(): 67.2 s
+	Total time spent in train(): 9.2 s
+	Total time spent in detect(): 9.0 s
+	Total execution time: 110.7 s
+
 */
 
 
