@@ -36,11 +36,12 @@
 */
 
 void getFeatureMapsGPU(const IplImage* image, const int k, CvLSVMFeatureMapCaskade **map) {
-    int sizeX, sizeY;
+	// CPP Line 82
+	int sizeX, sizeY;
     int p, px, stringSize;
     int height, width, numChannels;
     int i, j, kk, c, ii, jj, d;
-    float  * datadx, * datady;
+    float  *datadx, *datady;
     
     int   ch; 
     float magnitude, x, y, tx, ty;
@@ -49,7 +50,39 @@ void getFeatureMapsGPU(const IplImage* image, const int k, CvLSVMFeatureMapCaska
     int *nearest;
     float *w, a_x, b_x;
 
-    float kernel[3] = {-1.f, 0.f, 1.f};	
+	// TODO: Replace this with hardcoded arrays inside kernels
+	float kernel[3] = {-1.f, 0.f, 1.f};
+    CvMat kernel_dx = cvMat(1, 3, CV_32F, kernel);
+    CvMat kernel_dy = cvMat(3, 1, CV_32F, kernel);
+    
+	float *r;
+	int *alfa;
+
+
+	float boundary_x[NUM_SECTOR + 1];
+    float boundary_y[NUM_SECTOR + 1];
+    float max, dotProd;
+    int   maxi;
+
+    height = image->height;
+    width  = image->width ;
+
+    numChannels = image->nChannels;	
+	// CPP Line 110	
+	
+	// Replaces dx, dy = cvCreateImage();
+	cudaMalloc(&d_dx, sizeof(float) * width * height * 3);
+	cudaMalloc(&d_dx, sizeof(float) * width * height * 3);
+
+	// CPP Line 117
+    sizeX = width  / k;
+    sizeY = height / k;
+    px    = 3 * NUM_SECTOR; 
+    p     = px;
+    stringSize = sizeX * p;
+
+	allocFeatureMapObject(map, sizeX, sizeY, p);
+	// Cpp Line 122
 
 	// Kernel 1: kernel_filter2d (replaces cvFilter2D)
 
