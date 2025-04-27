@@ -11,7 +11,9 @@
 
 /*  NOTE: Clock Rate = 1328500 kHz */
 
-/* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3
+/* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3 
+	As a convention, just use the last thread measurement and copy alongside the Function Timing Summary
+		
 
 	OPTIMIZATION NAME: 16x16 Shared Memory
 
@@ -22,7 +24,6 @@
 	~ 11702 cycles to convert shared memory to global memory.
 	453 cycles unaccounted for.
 
-	IF YOU WAIT FOR ALL 240 PRINT STATEMENTS TO END YOU GET THIS TOO
 	Total execution time: 16850.0 ms.
 
 	--- Function Timing Summary ---
@@ -50,8 +51,8 @@
 */
 
 
-// Still using atomics excessively, so we might not see speedup at all.  No removals of if() statements
-// k seems to be passed in as cell_size, which is set to 4... for loop should be okay.
+// No removals of if() statements
+// k seems to be passed in as cell_size, which is set to 4... for() is okay.
 
 __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w,  int *d_nearest) {
 	long long int phase0, c_start;
