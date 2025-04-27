@@ -13,38 +13,39 @@
 	As a convention, just use the last thread measurement and copy alongside the Function Timing Summary
 		
 
-	OPTIMIZATION NAME: 27x1 Coalesced Memory
+	OPTIMIZATION NAME: 27x1 Coalesced Memory with minimal global reads.
 
 	MULTISCALE
-	Thread 0,0 of Block 0,0 took 7012 total cycles. It required:
-	~ 696 cycles to write to shared memory.
-	~ 5823 cycles to compute data.
-	~ 182 cycles to convert shared memory to global memory.
-	311 cycles unaccounted for.
-	Total execution time: 18490.0 ms.
+	Thread 0,0 of Block 0,0 took 6560 total cycles. It required:
+	~ 671 cycles to write to shared memory.
+	~ 5387 cycles to compute data.
+	~ 176 cycles to convert shared memory to global memory.
+	326 cycles unaccounted for.
+	Total execution time: 18470.0 ms.
 
 	--- Function Timing Summary ---
-	Total time spent in getFeatures(): 2.2 s
+	Total time spent in getFeatures(): 2.4 s
 	Total time spent in gaussianCorrelation(): 0.7 s
-	Total time spent in train(): -2.0 s
-	Total time spent in detect(): -1.6 s
-	Total execution time: -0.8 s
+	Total time spent in train(): -2.2 s
+	Total time spent in detect(): -1.9 s
+	Total execution time: -1.0 s
 
 
 	SINGLESCALE
-	Thread 0,0 of Block 0,0 took 10939 total cycles. It required:
-	~ 878 cycles to write to shared memory.
-	~ 9532 cycles to compute data.
-	~ 203 cycles to convert shared memory to global memory.
-	326 cycles unaccounted for.
-	Total execution time: 103920.0 ms.
+	Thread 0,0 of Block 0,0 took 10005 total cycles. It required:
+	~ 882 cycles to write to shared memory.
+	~ 8573 cycles to compute data.
+	~ 222 cycles to convert shared memory to global memory.
+	328 cycles unaccounted for.
+	Total execution time: 103860.0 ms.
 
 	--- Function Timing Summary ---
 	Total time spent in getFeatures(): 23.3 s
-	Total time spent in gaussianCorrelation(): 74.5 s
+	Total time spent in gaussianCorrelation(): 74.8 s
 	Total time spent in train(): 14.9 s
-	Total time spent in detect(): 14.6 s
-	Total execution time: 127.4 s
+	Total time spent in detect(): 14.7 s
+	Total execution time: 127.7 s
+
 
 
 */
