@@ -1,0 +1,129 @@
+// Team 1: Alex Caulin-Cardo Gaussian Correlation CUDA
+// gaussianCorrelation() in runtracker.cpp is the serial version of this
+// changed into cuda and ran successfully
+// runtracker.cpp call this using gaussianCorrelationGPU()
+// doing: optimize cuda free's and memcpy/memallocs
+// LTD: smooth out bounding box changes
+// Current timing: Single: 39s. Multi: 15s.
+#include "gaussianCorrelation.cuh"
+#include <cuda_runtime.h>
+#include <cufft.h>
+#include <opencv2/core.hpp>
+#include <iostream>
+#include <vector>
+
+#define CUDA_CHECK(err) if (err != cudaSuccess) {     std::cerr << "CUDA error: " << cudaGetErrorString(err) << std::endl; exit(EXIT_FAILURE); }
+#define CUFFT_CHECK(err) if (err != CUFFT_SUCCESS) {     std::cerr << "CUFFT error: " << err << std::endl; exit(EXIT_FAILURE); }
+
+// Mult FFT(x1) * conj(FFT(x2)) for every channel
+__global__ void complexMultiplyConj(cufftComplex* A, cufftComplex* B, cufftComplex* Out, int total_size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < total_size) {
+        cufftComplex a = A[idx];
+        cufftComplex b = B[idx];
+        Out[idx].x = a.x * b.x + a.y * b.y;
+        Out[idx].y = a.y * b.x - a.x * b.y;
+    }
+}
+
+// Add all IFFTs result into single output
+__global__ void reduceAcrossChannels(float* input, float* output, int spatial_size, int channels) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= spatial_size) return;
+
+    float val = 0.0f;
+    for (int c = 0; c < channels; ++c) {
+        val += input[c * spatial_size + idx];
+    }
+    output[idx] = val / (spatial_size * channels);
+}
+
+// Final Gaussian kernel application
+__global__ void applyGaussian(float* input, float x1_sq, float x2_sq, float sigma, int spatial_size, int channels) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < spatial_size) {
+        float norm = (x1_sq + x2_sq - 2.0f * input[idx]) / (channels * spatial_size);
+        norm = fmaxf(norm, 0.0f);
+        input[idx] = __expf(-norm / (sigma * sigma));
+    }
+}
+
+// Allocate mem once initially
+void initCUDAMem(GaussianCorrelationWorkspace& ws, int size_y, int size_x, int size_z) {
+    int spatial_size = size_y * size_x;
+    int total_size = spatial_size * size_z;
+    size_t real_size = sizeof(float) * total_size;
+    size_t complex_size = sizeof(cufftComplex) * total_size;
+
+    CUDA_CHECK(cudaMalloc(&ws.d_x1, real_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_x2, real_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_x1f, complex_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_x2f, complex_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_mult, complex_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_ifft, real_size));
+    CUDA_CHECK(cudaMalloc(&ws.d_result, sizeof(float) * spatial_size));
+
+    // Create FFT plans (reuse across calls)
+    CUFFT_CHECK(cufftPlanMany(&ws.plan_fwd, 1, &spatial_size,
+                              NULL, 1, spatial_size,
+                              NULL, 1, spatial_size,
+                              CUFFT_R2C, size_z));
+    CUFFT_CHECK(cufftPlanMany(&ws.plan_inv, 1, &spatial_size,
+                              NULL, 1, spatial_size,
+                              NULL, 1, spatial_size,
+                              CUFFT_C2R, size_z));
+}
+
+// Free cuda mem at the end once
+void freeCUDAMem(GaussianCorrelationWorkspace& ws) {
+    cudaFree(ws.d_x1);
+    cudaFree(ws.d_x2);
+    cudaFree(ws.d_x1f);
+    cudaFree(ws.d_x2f);
+    cudaFree(ws.d_mult);
+    cudaFree(ws.d_ifft);
+    cudaFree(ws.d_result);
+    cufftDestroy(ws.plan_fwd);
+    cufftDestroy(ws.plan_inv);
+}
+
+// Changed this main function run using the reused workspace
+cv::Mat gaussianCorrelationGPU(const cv::Mat& x1, const cv::Mat& x2,
+                                int size_y, int size_x, int size_z, float sigma,
+                                GaussianCorrelationWorkspace& ws) {
+    int spatial_size = size_y * size_x;
+    int total_size = spatial_size * size_z;
+    size_t real_size = sizeof(float) * total_size;
+
+    CUDA_CHECK(cudaMemcpy(ws.d_x1, x1.ptr<float>(), real_size, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(ws.d_x2, x2.ptr<float>(), real_size, cudaMemcpyHostToDevice));
+
+    // FFT
+    CUFFT_CHECK(cufftExecR2C(ws.plan_fwd, ws.d_x1, ws.d_x1f));
+    CUFFT_CHECK(cufftExecR2C(ws.plan_fwd, ws.d_x2, ws.d_x2f));
+
+    //kernel call: might update threads/blocks
+    int threads = 128;
+    int blocks = (total_size + threads - 1) / threads;
+    complexMultiplyConj<<<blocks, threads>>>(ws.d_x1f, ws.d_x2f, ws.d_mult, total_size);
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    // IFFT
+    CUFFT_CHECK(cufftExecC2R(ws.plan_inv, ws.d_mult, ws.d_ifft));
+
+    // Reduce result
+    blocks = (spatial_size + threads - 1) / threads;
+    reduceAcrossChannels<<<blocks, threads>>>(ws.d_ifft, ws.d_result, spatial_size, size_z);
+
+    // Comp norms
+    float x1_sq = static_cast<float>(cv::sum(x1.mul(x1))[0]);
+    float x2_sq = static_cast<float>(cv::sum(x2.mul(x2))[0]);
+
+    // kernel call
+    applyGaussian<<<blocks, threads>>>(ws.d_result, x1_sq, x2_sq, sigma, spatial_size, size_z);
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    std::vector<float> h_result(spatial_size);
+    CUDA_CHECK(cudaMemcpy(h_result.data(), ws.d_result, sizeof(float) * spatial_size, cudaMemcpyDeviceToHost));
+    return cv::Mat(size_y, size_x, CV_32F, h_result.data()).clone();
+}
