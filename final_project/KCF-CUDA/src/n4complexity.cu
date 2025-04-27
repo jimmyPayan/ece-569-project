@@ -12,6 +12,8 @@
 /*  NOTE: Clock Rate = 1328500 kHz */
 
 /* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3
+
+	OPTIMIZATION NAME: 16x16 Shared Memory	
 	Thread 0,0 of Block 0,0 took 27266 total cycles. It required:
 	~ 1022 cycles to write to shared memory.
 	~ 14089 cycles to compute data.
