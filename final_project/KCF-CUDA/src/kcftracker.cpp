@@ -551,6 +551,7 @@ void printProfilingSummary() {
     std::cout << "\n--- Function Timing Summary ---\n";
     std::cout << "Total time spent in getFeatures(): " << time_getFeatures << " s\n";
     std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
-    std::cout << "Total time spent in train(): " << time_train << " s\n";
-    std::cout << "Total time spent in detect(): " << time_detect << " s\n";
+    std::cout << "Total time spent in train(): " << time_train - time_getFeatures << " s\n";
+    std::cout << "Total time spent in detect(): " << time_detect - time_getFeatures  << " s\n";
+    std::cout << "Total execution time: " << time_gaussian + time_train + time_detect - time_getFeatures << " s\n";
 }

@@ -1,7 +1,7 @@
 #define NUM_SECTOR 9
-#define BLOCK_DIM 8
+#define BLOCK_DIM 16
 #define K_MAX 4
-#define FEATURES_MAX 81
+#define FEATURES_MAX 27
 
 #include <stdio.h>
 
@@ -48,59 +48,43 @@ if (i < sizeY && j < sizeX) {
         {
             d = (k * i + ii) * width + (j * k + jj);
 
-            // d_map[ i * stringSize + j * numFeatures + d_alfa[d * 2    ]] += 
-            //     d_r[d] * d_w[ii * 2] * d_w[jj * 2];
             shared_blockMap[Idx * numFeatures + d_alfa[d * 2]] += 
                 d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-            // d_map[ i * stringSize + j * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-            //     d_r[d] * d_w[ii * 2] * d_w[jj * 2];
             shared_blockMap[Idx * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
                 d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-            if ((threadIdx.x + shared_nearest[ii] >= 0) && 
-                (threadIdx.x + shared_nearest[ii] < BLOCK_DIM))
+            if (((int)threadIdx.x + shared_nearest[ii] >= 0) && 
+                ((int)threadIdx.x + shared_nearest[ii] < BLOCK_DIM))
             {
 
-                // d_map[(i + nearest[ii]) * stringSize + j * numFeatures + d_alfa[d * 2    ]] += 
-                //     d_r[d] * d_w[ii * 2 + 1] * d_w[jj * 2];
                 shared_blockMap[((threadIdx.x + shared_nearest[ii]) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
                     d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
 
-                // d_map[(i + nearest[ii]) * stringSize + j * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                //     d_r[d] * d_w[ii * 2 + 1] * d_w[jj * 2];
                 shared_blockMap[((threadIdx.x + shared_nearest[ii]) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
                     d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
             }
 
-            if ((threadIdx.y + shared_nearest[jj] >= 0) && 
-                (threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
+            if (((int)threadIdx.y + shared_nearest[jj] >= 0) && 
+                ((int)threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
             {
 
-                // d_map[i * stringSize + (j + nearest[jj]) * numFeatures + d_alfa[d * 2    ]] += 
-                //     d_r[d] * d_w[ii * 2] * d_w[jj * 2 + 1];
                 shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
                     d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
 
-                // d_map[i * stringSize + (j + nearest[jj]) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                //     d_r[d] * d_w[ii * 2] * d_w[jj * 2 + 1];
                 shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
                     d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
             }
 
-            if ((threadIdx.x + shared_nearest[ii] >= 0) && 
-                (threadIdx.x + shared_nearest[ii] < BLOCK_DIM) &&
-                (threadIdx.y + shared_nearest[jj] >= 0) && 
-                (threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
+            if (((int)threadIdx.x + shared_nearest[ii] >= 0) && 
+                ((int)threadIdx.x + shared_nearest[ii] < BLOCK_DIM) &&
+                ((int)threadIdx.y + shared_nearest[jj] >= 0) && 
+                ((int)threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
             {
- 
-                // d_map[(i + nearest[ii]) * stringSize + (j + nearest[jj]) * numFeatures + d_alfa[d * 2    ]] += 
-                //     d_r[d] * d_w[ii * 2 + 1] * d_w[jj * 2 + 1];
+
                 shared_blockMap[((threadIdx.x + shared_nearest[ii]) + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
                     d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
 
-                // d_map[(i + nearest[ii]) * stringSize + (j + nearest[jj]) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                //     d_r[d] * d_w[ii * 2 + 1] * d_w[jj * 2 + 1];
                 shared_blockMap[((threadIdx.x + shared_nearest[ii]) + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
                     d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
             }
@@ -109,30 +93,20 @@ if (i < sizeY && j < sizeX) {
     }/*for(ii = 0; ii < k; ii++)*/
 }/*if (i < sizeY && j < sizeX)*/
 
+__syncthreads();
 
-// Write shared memory to d_map
-	if (i < sizeY && j < sizeX) {
-    	for (int a = 0; a < numFeatures; a++) {
-        	d_map[i * stringSize + j * numFeatures + a] = shared_blockMap[Idx * numFeatures + a];
-    	}
-	}
-
+// Write to global memory
+for (int a = 0; a < numFeatures; a++) {
+    d_map[i * stringSize + j * numFeatures + a] = shared_blockMap[Idx * numFeatures + a];
 }
 
+}
 
 void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *map, int stringSize, int *alfa, float *r, float *w, int *nearest){
 	//printf("Running kernel_n4.\n");
     float *d_map, *d_r, *d_w;
     int *d_alfa, *d_nearest;
-// Commented out cudaMalloc()'s are passed by value
-    //cudaMalloc((void**) &sizeY, sizeof(int));
-    //cudaMalloc((void**) &sizeX, sizeof(int));
-    //cudaMalloc((void**) &k,     sizeof(int));
-    //cudaMalloc((void**) &height, sizeof(int);
-    //cudaMalloc((void**) &width, sizeof(int));
-    //cudaMalloc((void**) &numFeatures, sizeof(int));
     cudaMalloc((void**) &d_map, sizeof(float) * (sizeX * sizeY * numFeatures));
-    //cudaMalloc((void**) &stringSize, sizeof(int));
     cudaMalloc((void**) &d_alfa, sizeof(int) * (width * height * 2));
     cudaMalloc((void**) &d_r, sizeof(float) * (width * height));
     cudaMalloc((void**) &d_w, sizeof(float) * (k * 2));
@@ -151,10 +125,6 @@ void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatu
     kernel_n4<<<blocksPerGrid,threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures, d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
 
     cudaMemcpy(map, d_map, sizeof(float) * (sizeX * sizeY * numFeatures), cudaMemcpyDeviceToHost);
-    //cudaMemcpy(alfa, d_alfa, sizeof(int) * (width * height * 2) , cudaMemcpyDeviceToHost);
-    //cudaMemcpy(r, d_r, sizeof(float) * (width * height), cudaMemcpyDeviceToHost); 
-    //cudaMemcpy(w, d_w, sizeof(float) * (k * 2), cudaMemcpyDeviceToHost);
-    //cudaMemcpy(nearest, d_nearest, sizeof(int) * k, cudaMemcpyDeviceToHost); 
 
     cudaFree(d_map);
     cudaFree(d_alfa);
