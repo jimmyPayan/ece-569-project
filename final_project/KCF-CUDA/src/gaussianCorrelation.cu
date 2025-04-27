@@ -103,7 +103,7 @@ cv::Mat gaussianCorrelationGPU(const cv::Mat& x1, const cv::Mat& x2,
     CUFFT_CHECK(cufftExecR2C(ws.plan_fwd, ws.d_x2, ws.d_x2f));
 
     //kernel call: might update threads/blocks
-    int threads = 256;
+    int threads = 128;
     int blocks = (total_size + threads - 1) / threads;
     complexMultiplyConj<<<blocks, threads>>>(ws.d_x1f, ws.d_x2f, ws.d_mult, total_size);
     CUDA_CHECK(cudaDeviceSynchronize());

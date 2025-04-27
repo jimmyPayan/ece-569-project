@@ -252,7 +252,7 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
     auto start1 = std::chrono::high_resolution_clock::now();
     cv::Mat k = gaussianCorrelationGPU(x, z, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
     auto end1 = std::chrono::high_resolution_clock::now();
-    time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
+    time_cudaGaus += std::chrono::duration<double, std::milli>(end1 - start1).count();
     cv::Mat res = (real(fftd(complexMultiplication(_alphaf, fftd(k)), true)));
 
     //minMaxLoc only accepts doubles for the peak, and integer points for the coordinates
@@ -294,7 +294,7 @@ auto start = std::chrono::high_resolution_clock::now();
     cv::Mat k = gaussianCorrelationGPU(x, x, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
 
     auto end1 = std::chrono::high_resolution_clock::now();
-    time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
+    time_cudaGaus += std::chrono::duration<double, std::milli>(end1 - start1).count();
     cv::Mat alphaf = complexDivision(_prob, (fftd(k) + lambda));
     
     _tmpl = (1 - train_interp_factor) * _tmpl + (train_interp_factor) * x;
@@ -570,7 +570,7 @@ void printProfilingSummary() {
     std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
     std::cout << "Total time spent in train(): " << time_train << " s\n";
     std::cout << "Total time spent in detect(): " << time_detect << " s\n";
-    std::cout << "Total time spent in gaussianCorrelationGPU(): " <<time_cudaGaus << "s\n";
+    std::cout << "Total time spent in gaussianCorrelationGPU(): " <<time_cudaGaus << "ms\n";
 }
 KCFTracker::~KCFTracker()
 {
