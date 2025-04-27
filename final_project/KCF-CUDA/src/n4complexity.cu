@@ -24,6 +24,8 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
 
 	int a, d;
 
+	int nearest_ii, nearest_jj;
+
 	if (Idx < k * 2)
 		shared_w [Idx] = d_w[Idx];
 
@@ -47,46 +49,43 @@ if (i < sizeY && j < sizeX) {
             (j * k + jj < width - 1))
         {
             d = (k * i + ii) * width + (j * k + jj);
+			
+			nearest_ii = shared_nearest[ii];
+			nearest_jj = shared_nearest[jj];
 
-            shared_blockMap[Idx * numFeatures + d_alfa[d * 2]] += 
-                d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
+            shared_blockMap[Idx * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-            shared_blockMap[Idx * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
+            shared_blockMap[Idx * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-            if (((int)threadIdx.x + shared_nearest[ii] >= 0) && 
-                ((int)threadIdx.x + shared_nearest[ii] < BLOCK_DIM))
+			
+            if (((int)threadIdx.x + nearest_ii >= 0) && 
+                ((int)threadIdx.x + nearest_ii < BLOCK_DIM))
             {
 
-                shared_blockMap[((threadIdx.x + shared_nearest[ii]) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
-                    d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
+                shared_blockMap[((threadIdx.x + nearest_ii) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
 
-                shared_blockMap[((threadIdx.x + shared_nearest[ii]) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                    d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
+                shared_blockMap[((threadIdx.x + nearest_ii) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
+            }
+			
+			
+            if (((int)threadIdx.y + nearest_jj >= 0) && 
+                ((int)threadIdx.y + nearest_jj < BLOCK_DIM))
+            {
+
+                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
+
+                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
             }
 
-            if (((int)threadIdx.y + shared_nearest[jj] >= 0) && 
-                ((int)threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
+            if (((int)threadIdx.x + nearest_ii 	>= 0) && 
+                ((int)threadIdx.x + nearest_ii 	< BLOCK_DIM) &&
+                ((int)threadIdx.y + nearest_jj  >= 0) && 
+                ((int)threadIdx.y + nearest_jj	< BLOCK_DIM))
             {
 
-                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
-                    d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
+                shared_blockMap[((threadIdx.x + nearest_ii) + (threadIdx.y + nearest_jj) * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
 
-                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                    d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
-            }
-
-            if (((int)threadIdx.x + shared_nearest[ii] >= 0) && 
-                ((int)threadIdx.x + shared_nearest[ii] < BLOCK_DIM) &&
-                ((int)threadIdx.y + shared_nearest[jj] >= 0) && 
-                ((int)threadIdx.y + shared_nearest[jj] < BLOCK_DIM))
-            {
-
-                shared_blockMap[((threadIdx.x + shared_nearest[ii]) + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += 
-                    d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
-
-                shared_blockMap[((threadIdx.x + shared_nearest[ii]) + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += 
-                    d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
+                shared_blockMap[((threadIdx.x + nearest_ii) + (threadIdx.y + nearest_jj) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
             }
         }
     }/*for(jj = 0; jj < k; jj++)*/
