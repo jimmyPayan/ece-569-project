@@ -6,6 +6,7 @@
 #define FEATURES_MAX 27
 
 #include <stdio.h>
+#include "n4complexity.cuh"
 
 // Timing functions give tools to directly evaluate speedups! Comment out if you want max performance, I suppose.
 
@@ -33,6 +34,30 @@
 	Total time spent in getFeatureMaps():16.8 s
 
 */
+
+void getFeatureMapsGPU(const IplImage* image, const int k, CvLSVMFeatureMapCaskade **map) {
+    int sizeX, sizeY;
+    int p, px, stringSize;
+    int height, width, numChannels;
+    int i, j, kk, c, ii, jj, d;
+    float  * datadx, * datady;
+    
+    int   ch; 
+    float magnitude, x, y, tx, ty;
+    
+    IplImage * dx, * dy;
+    int *nearest;
+    float *w, a_x, b_x;
+
+    float kernel[3] = {-1.f, 0.f, 1.f};	
+
+	// Kernel 1: kernel_filter2d (replaces cvFilter2D)
+
+
+	// Kernel 2: kernel_r_alfa	(calculates r and alfa) 
+	// Kernel 3: kernel_n4	(replaces n4 time complexity feature map)
+	
+}
 
 __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
                           float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w, int *d_nearest)
@@ -148,7 +173,9 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
         printf("Thread 0,0,0 of Block 0,0 took %d total cycles. It required:\n~ %d cycles to write to shared memory.\n~ %d cycles to compute data.\n~ %d cycles to convert shared memory to global memory.\n%d cycles unaccounted for.\n",
             (int)phase0, phase1, phase2, phase3, ((int)phase0 - (phase1 + phase2 + phase3)));
     }
-}
+} // end kernel_n4
+
+
 
 void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
                 float *map, int stringSize, int *alfa, float *r, float *w, int *nearest)
