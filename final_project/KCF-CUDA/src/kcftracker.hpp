@@ -83,6 +83,7 @@ the use of this software, even if advised of the possibility of such damage.
 #pragma once
 
 #include "tracker.h"
+#include "normalizeAndTruncate.cuh"
 
 #ifndef _OPENCV_KCFTRACKER_HPP_
 #define _OPENCV_KCFTRACKER_HPP_

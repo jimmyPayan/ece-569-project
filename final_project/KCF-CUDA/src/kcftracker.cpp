@@ -441,7 +441,7 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
     auto end1 = std::chrono::high_resolution_clock::now();
     time_getFeatureMaps += std::chrono::duration<double>(end1 - start1).count();
     
-	normalizeAndTruncate(map,0.2f);
+	normalizeAndTruncateGPU(map,0.2f);
         PCAFeatureMaps(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;

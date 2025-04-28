@@ -29,7 +29,7 @@ if(NOT WIN32)
 endif()
 
 FILE(GLOB_RECURSE CPP_SOURCES "src/*.cpp")
-set(CUDA_SOURCES src/n4complexity.cu)
+set(CUDA_SOURCES src/n4complexity.cu src/normalizeAndTruncate)
 #Mark CUDA files
 set_source_files_properties(${CUDA_SOURCES} PROPERTIES LANGUAGE CUDA)
 #Add executable

@@ -1,180 +1,188 @@
-#define NUM_SECTOR 9
-#define BLOCK_X 6
-#define BLOCK_Y 6
-#define BLOCK_Z 27
+ #define NUM_SECTOR 9
+#define BLOCK_DIM 16
 #define K_MAX 4
 #define FEATURES_MAX 27
 
 #include <stdio.h>
 
-// Timing functions give tools to directly evaluate speedups! Comment out if you want max performance, I suppose.
+
+// First optimization: Proper block dimensions (32x32 -> 16x16). Preparatory optimization that resulted in -10s from singlescale and -2s from Multiscale. Done so that shared memory (optimization 2) will not be > 48 kB.
+// Timing functions  give tools to directly evaluate speedups! Comment out if you want max performance, I suppose.
 
 /*  NOTE: Clock Rate = 1328500 kHz */
 
-/* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3 
-	As a convention, just use the last thread measurement and copy alongside the Function Timing Summary
-		
+/* 	UPDATE THIS COMMENT AFTER ANY AND ALL OPTIMIZATIONS PLEASE <3
 
-	OPTIMIZATION NAME: 6x6x27 Fully Active Threads with Privatization and optimized reads
+	OPTIMIZATION NAME: 16x16 Shared Memory
 
-	SINGLESCALE
-	Thread 0,0,0 of Block 0,0 took 23402 total cycles. It required:
-	~ 1139 cycles to write to shared memory.
-	~ 21108 cycles to compute data.
-	~ 431 cycles to convert shared memory to global memory.
-	724 cycles unaccounted for.
-	Total execution time: 96370.0 ms.
+	MULTISCALE
+	Thread 0,0 of Block 0,0 took 27266 total cycles. It required:
+	~ 1022 cycles to write to shared memory.
+	~ 14089 cycles to compute data.
+	~ 11702 cycles to convert shared memory to global memory.
+	453 cycles unaccounted for.
+
+	IF YOU WAIT FOR ALL 240 PRINT STATEMENTS TO END YOU GET THIS TOO
+	Total execution time: 16850.0 ms.
 
 	--- Function Timing Summary ---
-	Total time spent in getFeatures():24.5 s
-	Total time spent in gaussianCorrelation(): 63.5 s
-	Total time spent in train(): 7.9 s
-	Total time spent in detect(): 8.0 s
-	Total time spent in getFeatureMaps():16.8 s
+	Total time spent in getFeatures(): 2.0 s
+	Total time spent in gaussianCorrelation(): 0.7 s
+	Total time spent in train(): -1.8 s
+	Total time spent in detect(): -1.5 s
+	Total execution time: -0.7 s
+
+	SINGLESCALE
+	Thread 0,0 of Block 0,0 took 83465 total cycles. It required:
+	~ 1390 cycles to write to shared memory.
+	~ 28895 cycles to compute data.
+	~ 52642 cycles to convert shared memory to global memory.
+	538 cycles unaccounted for.
+	Total execution time: 96410.0 ms.
+
+	--- Function Timing Summary ---
+	Total time spent in getFeatures(): 25.2 s
+	Total time spent in gaussianCorrelation(): 67.2 s
+	Total time spent in train(): 9.2 s
+	Total time spent in detect(): 9.0 s
+	Total execution time: 110.7 s
 
 */
 
-__global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
-                          float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w, int *d_nearest)
-{
-    // Phase 0 Start: Overall thread duration
-    long long int phase0 = clock64();
 
-    __shared__ float shared_w[K_MAX * 2];
-    __shared__ int shared_nearest[K_MAX];
+// Still using atomics excessively, so we might not see speedup at all.  No removals of if() statements
+// k seems to be passed in as cell_size, which is set to 4... for loop should be okay.
 
-    int i = blockIdx.y * BLOCK_Y + threadIdx.y;
-    int j = blockIdx.x * BLOCK_X + threadIdx.x;
-    int f = threadIdx.z;  // feature index (0..26)
+__global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w,  int *d_nearest) {
+	long long int phase0, c_start;
+	phase0 = clock64();
 
-    int phase1, phase2, phase3;
+	// Allocate shared memory
+	__shared__ float shared_w[K_MAX * 2];
+	__shared__ int shared_nearest[K_MAX];
+	__shared__ float shared_blockMap[BLOCK_DIM * BLOCK_DIM * FEATURES_MAX];
 
-    // Local variables
-    int d;
-    int nearest_ii, nearest_jj;
-    int d_alfa_0, d_alfa_1;
-    float w_ii_0, w_ii_1, w_jj_0, w_jj_1;
-    float d_r_d;
-    float acc = 0.0f;
+	// Use thread IDs as iterators, same names as joaofaro to keep me sane while debugging
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int j = blockIdx.y * blockDim.y + threadIdx.y;
+	int Idx = threadIdx.x + threadIdx.y * blockDim.x;	
 
-    // Phase 1 Start: Initialize shared memory
-    phase1 = clock64();
+	int a, d;
+	
+	int phase1, phase2, phase3;
 
-    if (threadIdx.y == 0 && threadIdx.z == 0 && threadIdx.x < k * 2) {
-        shared_w[threadIdx.x] = d_w[threadIdx.x];
-    }
-    if (threadIdx.y == 0 && threadIdx.z == 0 && threadIdx.x < k) {
-        shared_nearest[threadIdx.x] = d_nearest[threadIdx.x];
-    }
+	int nearest_ii, nearest_jj;
 
-    __syncthreads();
-    // Phase 1 End: Initialize shared memory
-    phase1 = (int)(clock64() - phase1);
+	c_start = clock64();
+	if (Idx < k * 2)
+		shared_w [Idx] = d_w[Idx];
 
-    // Phase 2 Start: Compute
-    phase2 = clock64();
+	if (Idx < k)
+		shared_nearest[Idx] = d_nearest[Idx];
 
-    if (i < sizeY && j < sizeX && f < numFeatures) {
-        for (int ii = 0; ii < k; ii++) {
-    		nearest_ii = shared_nearest[ii];
-            w_ii_0 = shared_w[ii * 2];
-            w_ii_1 = shared_w[ii * 2 + 1];
-      
-		for (int jj = 0; jj < k; jj++) {
-                int y = i * k + ii;
-                int x = j * k + jj;
-                if (y > 0 && y < height - 1 && x > 0 && x < width - 1) {
-                    d = y * width + x;
+	if (Idx < (BLOCK_DIM * BLOCK_DIM)) {
+		for (a = 0 ; a < numFeatures; a++) {
+			shared_blockMap[Idx * numFeatures + a] = 0.0f;
+		}
+	}
+	phase1 = (int) (clock64() - c_start);
+	__syncthreads();
 
-                    nearest_jj = shared_nearest[jj];
-                    d_alfa_0 = d_alfa[d * 2];
-                    d_alfa_1 = d_alfa[d * 2 + 1];
-                    w_jj_0 = shared_w[jj * 2];
-                    w_jj_1 = shared_w[jj * 2 + 1];
-                    d_r_d = d_r[d];
+c_start = clock64();
+if (i < sizeY && j < sizeX) {
+    for (int ii = 0; ii < k; ii++) {
+    for (int jj = 0; jj < k; jj++) {
+        if ((i * k + ii > 0) && 
+            (i * k + ii < height - 1) && 
+            (j * k + jj > 0) && 
+            (j * k + jj < width - 1))
+        {
+            d = (k * i + ii) * width + (j * k + jj);
+			
+			nearest_ii = shared_nearest[ii];
+			nearest_jj = shared_nearest[jj];
 
-                    // Center
-                    if (f == d_alfa_0)
-                        acc += d_r_d * w_ii_0 * w_jj_0;
-                    if (f == d_alfa_1 + NUM_SECTOR)
-                        acc += d_r_d * w_ii_0 * w_jj_0;
+            shared_blockMap[Idx * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-                    // Neighbor in Y
-                    int ni = i + nearest_ii;
-                    if (ni >= 0 && ni < sizeY) {
-                        if (f == d_alfa_0)
-                            acc += d_r_d * w_ii_1 * w_jj_0;
-                        if (f == d_alfa_1 + NUM_SECTOR)
-                            acc += d_r_d * w_ii_1 * w_jj_0;
-                    }
+            shared_blockMap[Idx * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2];
 
-                    // Neighbor in X
-                    int nj = j + nearest_jj;
-                    if (nj >= 0 && nj < sizeX) {
-                        if (f == d_alfa_0)
-                            acc += d_r_d * w_ii_0 * w_jj_1;
-                        if (f == d_alfa_1 + NUM_SECTOR)
-                            acc += d_r_d * w_ii_0 * w_jj_1;
-                    }
+			
+            if (((int)threadIdx.x + nearest_ii >= 0) && 
+                ((int)threadIdx.x + nearest_ii < BLOCK_DIM))
+            {
 
-                    // Neighbor in XY
-                    if (ni >= 0 && ni < sizeY && nj >= 0 && nj < sizeX) {
-                        if (f == d_alfa_0)
-                            acc += d_r_d * w_ii_1 * w_jj_1;
-                        if (f == d_alfa_1 + NUM_SECTOR)
-                            acc += d_r_d * w_ii_1 * w_jj_1;
-                    }
-                }
+                shared_blockMap[((threadIdx.x + nearest_ii) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
+
+                shared_blockMap[((threadIdx.x + nearest_ii) + threadIdx.y * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2];
+            }
+			
+			
+            if (((int)threadIdx.y + nearest_jj >= 0) && 
+                ((int)threadIdx.y + nearest_jj < BLOCK_DIM))
+            {
+
+                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
+
+                shared_blockMap[(threadIdx.x + (threadIdx.y + shared_nearest[jj]) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2] * shared_w[jj * 2 + 1];
+            }
+
+            if (((int)threadIdx.x + nearest_ii 	>= 0) && 
+                ((int)threadIdx.x + nearest_ii 	< BLOCK_DIM) &&
+                ((int)threadIdx.y + nearest_jj  >= 0) && 
+                ((int)threadIdx.y + nearest_jj	< BLOCK_DIM))
+            {
+
+                shared_blockMap[((threadIdx.x + nearest_ii) + (threadIdx.y + nearest_jj) * blockDim.x) * numFeatures + d_alfa[d * 2]] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
+
+                shared_blockMap[((threadIdx.x + nearest_ii) + (threadIdx.y + nearest_jj) * blockDim.x) * numFeatures + d_alfa[d * 2 + 1] + NUM_SECTOR] += d_r[d] * shared_w[ii * 2 + 1] * shared_w[jj * 2 + 1];
             }
         }
-    }
-    __syncthreads();
-    // Phase 2 End: Compute
-    phase2 = (int)(clock64() - phase2);
+    }/*for(jj = 0; jj < k; jj++)*/
+    }/*for(ii = 0; ii < k; ii++)*/
+}/*if (i < sizeY && j < sizeX)*/
 
-    // Phase 3 Start: Write to global memory
-    phase3 = clock64();
-    if (i < sizeY && j < sizeX && f < numFeatures) {
-        d_map[i * stringSize + j * numFeatures + f] = acc;
-    }
-    // Phase 3 End: Write to global memory
-    phase3 = (int)(clock64() - phase3);
+	__syncthreads();
+	phase2 = (int) (clock64() - c_start);
 
-    // Phase 0 End: Overall thread duration
-    phase0 = clock64() - phase0;
+	// Write to global memory
+	c_start = clock64();
+	for (int a = 0; a < numFeatures; a++) {
+		d_map[i * stringSize + j * numFeatures + a] = shared_blockMap[Idx * numFeatures + a];
+	}
+	phase3 = (int) (clock64() - c_start);
+	phase0 = clock64() - phase0;
+	if(threadIdx.x == 0 && threadIdx.y == 0 && blockIdx.x == 0 && blockIdx.y == 0) {
+		printf("Thread 0,0 of Block 0,0 took %d total cycles. It required:\n~ %d cycles to write to shared memory.\n~ %d cycles to compute data.\n~ %d cycles to convert shared memory to global memory.\n%d cycles unaccounted for.\n", (int) phase0, phase1, phase2, phase3, ((int) phase0 - (phase1 + phase2 + phase3)));	
+	}
 
-    if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0 &&
-        blockIdx.x == 0 && blockIdx.y == 0) {
-        printf("Thread 0,0,0 of Block 0,0 took %d total cycles. It required:\n~ %d cycles to write to shared memory.\n~ %d cycles to compute data.\n~ %d cycles to convert shared memory to global memory.\n%d cycles unaccounted for.\n",
-            (int)phase0, phase1, phase2, phase3, ((int)phase0 - (phase1 + phase2 + phase3)));
-    }
 }
 
-void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
-                float *map, int stringSize, int *alfa, float *r, float *w, int *nearest)
-{
-    float *d_map, *d_r, *d_w;
-    int *d_alfa, *d_nearest;
+void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures, float *map, int stringSize, int *alfa, float *r, float *w, int *nearest){
+	/*
+	cudaDeviceProp prop;
+	cudaGetDeviceProperties(&prop, 0); // 0 = device ID (first GPU)
+	printf("Clock Rate: %d kHz\n", (int)prop.clockRate);
+	*/  
 
-    cudaMalloc((void **)&d_map, sizeof(float) * (sizeX * sizeY * numFeatures));
-    cudaMalloc((void **)&d_alfa, sizeof(int) * (width * height * 2));
-    cudaMalloc((void **)&d_r, sizeof(float) * (width * height));
-    cudaMalloc((void **)&d_w, sizeof(float) * (k * 2));
-    cudaMalloc((void **)&d_nearest, sizeof(int) * k);
+	float *d_map, *d_r, *d_w;
+    int *d_alfa, *d_nearest;
+    cudaMalloc((void**) &d_map, sizeof(float) * (sizeX * sizeY * numFeatures));
+    cudaMalloc((void**) &d_alfa, sizeof(int) * (width * height * 2));
+    cudaMalloc((void**) &d_r, sizeof(float) * (width * height));
+    cudaMalloc((void**) &d_w, sizeof(float) * (k * 2));
+    cudaMalloc((void**) &d_nearest, sizeof(int) * k);
 
     cudaMemcpy(d_map, map, sizeof(float) * (sizeX * sizeY * numFeatures), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_alfa, alfa, sizeof(int) * (width * height * 2), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_r, r, sizeof(float) * (width * height), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_alfa, alfa, sizeof(int) * (width * height * 2) , cudaMemcpyHostToDevice);
+    cudaMemcpy(d_r, r, sizeof(float) * (width * height), cudaMemcpyHostToDevice); 
     cudaMemcpy(d_w, w, sizeof(float) * (k * 2), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_nearest, nearest, sizeof(int) * k, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_nearest, nearest, sizeof(int) * k, cudaMemcpyHostToDevice); 
 
-    dim3 threadsPerBlock(BLOCK_X, BLOCK_Y, BLOCK_Z);
-    dim3 blocksPerGrid(
-        (sizeX + BLOCK_X - 1) / BLOCK_X,
-        (sizeY + BLOCK_Y - 1) / BLOCK_Y);
+    // Total number of threads needed: sizeY * sizeX * k... max value of k is 4, which occurs during HOG. 1024 / 4 = 256, sqrt(256) = 16.
+    const dim3 threadsPerBlock(BLOCK_DIM, BLOCK_DIM);
+    const dim3 blocksPerGrid(ceil((float)sizeY / BLOCK_DIM), ceil((float)sizeX / BLOCK_DIM));
 
-    kernel_n4<<<blocksPerGrid, threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures,
-                                                  d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
+    kernel_n4<<<blocksPerGrid,threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures, d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
 
     cudaMemcpy(map, d_map, sizeof(float) * (sizeX * sizeY * numFeatures), cudaMemcpyDeviceToHost);
 
@@ -184,4 +192,3 @@ void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatu
     cudaFree(d_w);
     cudaFree(d_nearest);
 }
-
