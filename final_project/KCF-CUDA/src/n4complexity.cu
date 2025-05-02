@@ -1,6 +1,3 @@
-//Jimmy Payan Group 1
-//Optimization for getFeatureMaps()
-
 #define NUM_SECTOR 9
 #define BLOCK_X 6
 #define BLOCK_Y 6
@@ -40,7 +37,6 @@
 __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
                           float *d_map, int stringSize, int *d_alfa, float *d_r, float *d_w, int *d_nearest)
 {
-    // Phase 0 Start: Overall thread duration
     long long int phase0 = clock64();
 
     __shared__ float shared_w[K_MAX * 2];
@@ -52,7 +48,6 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
 
     int phase1, phase2, phase3;
 
-    // Local variables
     int d;
     int nearest_ii, nearest_jj;
     int d_alfa_0, d_alfa_1;
@@ -62,16 +57,26 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
 
     // Phase 1 Start: Initialize shared memory
     phase1 = clock64();
-
+/* giving errors
     if (threadIdx.y == 0 && threadIdx.z == 0 && threadIdx.x < k * 2) {
         shared_w[threadIdx.x] = d_w[threadIdx.x];
     }
     if (threadIdx.y == 0 && threadIdx.z == 0 && threadIdx.x < k) {
         shared_nearest[threadIdx.x] = d_nearest[threadIdx.x];
     }
+*/
 
+if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0) {
+    for (int t = 0; t < k * 2; ++t) {
+        shared_w[t] = d_w[t];
+    }
+    for (int t = 0; t < k; ++t) {
+        shared_nearest[t] = d_nearest[t];
+    }
+}
+
+//__syncthreads();
     __syncthreads();
-    // Phase 1 End: Initialize shared memory
     phase1 = (int)(clock64() - phase1);
 
     // Phase 2 Start: Compute
@@ -79,19 +84,23 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
 
     if (i < sizeY && j < sizeX && f < numFeatures) {
         for (int ii = 0; ii < k; ii++) {
-    		nearest_ii = shared_nearest[ii];
+            nearest_ii = shared_nearest[ii];
             w_ii_0 = shared_w[ii * 2];
             w_ii_1 = shared_w[ii * 2 + 1];
-      
-		for (int jj = 0; jj < k; jj++) {
+
+            for (int jj = 0; jj < k; jj++) {
                 int y = i * k + ii;
                 int x = j * k + jj;
+
                 if (y > 0 && y < height - 1 && x > 0 && x < width - 1) {
                     d = y * width + x;
 
-                    nearest_jj = shared_nearest[jj];
                     d_alfa_0 = d_alfa[d * 2];
                     d_alfa_1 = d_alfa[d * 2 + 1];
+
+                    if (d_alfa_0 >= numFeatures || d_alfa_1 + NUM_SECTOR >= numFeatures) continue;  //FIX
+
+                    nearest_jj = shared_nearest[jj];
                     w_jj_0 = shared_w[jj * 2];
                     w_jj_1 = shared_w[jj * 2 + 1];
                     d_r_d = d_r[d];
@@ -131,26 +140,25 @@ __global__ void kernel_n4(int sizeY, int sizeX, int k, int height, int width, in
             }
         }
     }
+
     __syncthreads();
-    // Phase 2 End: Compute
     phase2 = (int)(clock64() - phase2);
 
     // Phase 3 Start: Write to global memory
     phase3 = clock64();
     if (i < sizeY && j < sizeX && f < numFeatures) {
-        d_map[i * stringSize + j * numFeatures + f] = acc;
+        d_map[i * stringSize + j * numFeatures + f] = acc / (float)(k * k);  //FIX normalization
     }
-    // Phase 3 End: Write to global memory
     phase3 = (int)(clock64() - phase3);
 
-    // Phase 0 End: Overall thread duration
     phase0 = clock64() - phase0;
-
+/*
     if (threadIdx.x == 0 && threadIdx.y == 0 && threadIdx.z == 0 &&
         blockIdx.x == 0 && blockIdx.y == 0) {
-        /*printf("Thread 0,0,0 of Block 0,0 took %d total cycles. It required:\n~ %d cycles to write to shared memory.\n~ %d cycles to compute data.\n~ %d cycles to convert shared memory to global memory.\n%d cycles unaccounted for.\n",
-            (int)phase0, phase1, phase2, phase3, ((int)phase0 - (phase1 + phase2 + phase3))); */
+        printf("Thread 0,0,0 of Block 0,0 took %d total cycles. It required:\n~ %d cycles to write to shared memory.\n~ %d cycles to compute data.\n~ %d cycles to convert shared memory to global memory.\n%d cycles unaccounted for.\n",
+            (int)phase0, phase1, phase2, phase3, ((int)phase0 - (phase1 + phase2 + phase3)));
     }
+*/
 }
 
 void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatures,
@@ -178,6 +186,8 @@ void featureGPU(int sizeY, int sizeX, int k, int height, int width, int numFeatu
 
     kernel_n4<<<blocksPerGrid, threadsPerBlock>>>(sizeY, sizeX, k, height, width, numFeatures,
                                                   d_map, stringSize, d_alfa, d_r, d_w, d_nearest);
+
+    cudaDeviceSynchronize(); // Ensure kernel completes before copying back
 
     cudaMemcpy(map, d_map, sizeof(float) * (sizeX * sizeY * numFeatures), cudaMemcpyDeviceToHost);
 

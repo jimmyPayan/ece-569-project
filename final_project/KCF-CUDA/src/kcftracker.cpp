@@ -587,5 +587,6 @@ void printProfilingSummary() {
 }
 KCFTracker::~KCFTracker()
 {
+std::cout << "In destructor " << "\n";
     freeCUDAMem(ws);
 }

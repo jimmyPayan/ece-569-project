@@ -102,10 +102,13 @@ int normalizeAndTruncateGPU(CvLSVMFeatureMapCaskade* map, const float alfa)
     // alloc + copy
     float *d_map, *d_part, *d_new;
     CUDA_CHECK(cudaMalloc(&d_map,   inBytes));
+
     CUDA_CHECK(cudaMemcpy(d_map, map->map, inBytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMalloc(&d_part, partBytes));
-    CUDA_CHECK(cudaMalloc(&d_new,  outBytes));
+    cudaMemset(d_part, 0, partBytes);
 
+    CUDA_CHECK(cudaMalloc(&d_new,  outBytes));
+    cudaMemset(d_new, 0, outBytes);
     // launch computePartOfNorm
     int t1 = 256, b1 = (totalCells + t1 -1)/t1;
     computePartOfNorm<<<b1,t1>>>(d_map, d_part, oldSizeX, oldSizeY);

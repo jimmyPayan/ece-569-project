@@ -33,9 +33,11 @@ __global__ void reduceAcrossChannels(float* input, float* output, int spatial_si
 
     float val = 0.0f;
     for (int c = 0; c < channels; ++c) {
-        val += input[c * spatial_size + idx];
+        val += input[c * spatial_size + idx]/(spatial_size);
+    	//val += input[c*spatial_size + idx];
     }
-    output[idx] = val / (spatial_size * channels);
+    //output[idx] = val / (spatial_size * channels);
+    output[idx] = val;
 }
 
 // Final Gaussian kernel application
@@ -62,6 +64,9 @@ void initCUDAMem(GaussianCorrelationWorkspace& ws, int size_y, int size_x, int s
     CUDA_CHECK(cudaMalloc(&ws.d_mult, complex_size));
     CUDA_CHECK(cudaMalloc(&ws.d_ifft, real_size));
     CUDA_CHECK(cudaMalloc(&ws.d_result, sizeof(float) * spatial_size));
+    cudaMemset(ws.d_mult, 0, sizeof(cufftComplex) * total_size);
+    cudaMemset(ws.d_result, 0, sizeof(float) * spatial_size);
+
 
     // Create FFT plans (reuse across calls)
     CUFFT_CHECK(cufftPlanMany(&ws.plan_fwd, 1, &spatial_size,
@@ -109,7 +114,9 @@ cv::Mat gaussianCorrelationGPU(const cv::Mat& x1, const cv::Mat& x2,
     CUDA_CHECK(cudaDeviceSynchronize());
 
     // IFFT
+    
     CUFFT_CHECK(cufftExecC2R(ws.plan_inv, ws.d_mult, ws.d_ifft));
+    CUDA_CHECK(cudaDeviceSynchronize());
 
     // Reduce result
     blocks = (spatial_size + threads - 1) / threads;

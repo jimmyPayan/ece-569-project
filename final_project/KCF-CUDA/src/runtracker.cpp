@@ -16,7 +16,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char* argv[]){
-  cout << "ECE569 C Implementation: 2CUDA optimizations: gausCorrelation and normalizeAndTruncate" << endl;
+  cout << "ECE569 C Implementation: All 3 CUDA optimizations: gausCorrelation(Alex) and normalizeAndTruncate(Ryan) and getFeatures (Jimmy)" << endl;
   cout << "Operating at " << fixed << CLOCKS_PER_SEC << " ticks per second (important for time.h)." << endl;
   float tick_rate = CLOCKS_PER_SEC / 1000;
 
