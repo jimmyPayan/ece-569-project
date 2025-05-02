@@ -214,8 +214,8 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
         w[j * 2    ] = 1.0f/a_x * ((a_x * b_x) / ( a_x + b_x)); 
         w[j * 2 + 1] = 1.0f/b_x * ((a_x * b_x) / ( a_x + b_x));  
     }/*for(j = k / 2; j < k; j++)*/
-
-    auto n4start = std::chrono::high_resolution_clock::now();
+    //jimmy's timing
+    //auto n4start = std::chrono::high_resolution_clock::now();
     /*
     
     for(i = 0; i < sizeY; i++)
@@ -272,11 +272,11 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
 
     // ECE 569: Replaced the loop which is here on the main github (n^4 time complexity) with a 3D CUDA implementation, which has n time complexity per thread
     featureGPU(sizeY, sizeX, k, height, width, (*map)-> numFeatures, (*map)->map, stringSize, alfa, r, w, nearest);
+    //jimmy's timing end
+    //auto  n4end = std::chrono::high_resolution_clock::now();
 
-    auto  n4end = std::chrono::high_resolution_clock::now();
-
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(n4end - n4start);
-    printf("FeatureGPU completed in %lld ms\n", duration.count());
+    //auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(n4end - n4start);
+    //printf("FeatureGPU completed in %lld ms\n", duration.count());
 
 
     cvReleaseImage(&dx);
