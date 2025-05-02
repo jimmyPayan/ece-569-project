@@ -41,7 +41,7 @@
 
 
 //Modified from latentsvm module's "lsvmc_featurepyramid.cpp".
-
+#include <chrono>
 //#include "precomp.hpp"
 //#include "_lsvmc_latentsvm.h"
 //#include "_lsvmc_resizeimg.h"
@@ -211,6 +211,8 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
         w[j * 2 + 1] = 1.0f/b_x * ((a_x * b_x) / ( a_x + b_x));  
     }/*for(j = k / 2; j < k; j++)*/
 
+	auto n4start = std::chrono::high_resolution_clock::now();
+
     for(i = 0; i < sizeY; i++)
     {
       for(j = 0; j < sizeX; j++)
@@ -261,6 +263,11 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
       }/*for(j = 1; j < sizeX - 1; j++)*/
     }/*for(i = 1; i < sizeY - 1; i++)*/
     
+    auto  n4end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(n4end - n4start);
+    printf("Serial implementation completed in %lld ms\n", duration.count());
+
     cvReleaseImage(&dx);
     cvReleaseImage(&dy);
 
