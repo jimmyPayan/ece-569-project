@@ -210,8 +210,8 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
         w[j * 2    ] = 1.0f/a_x * ((a_x * b_x) / ( a_x + b_x)); 
         w[j * 2 + 1] = 1.0f/b_x * ((a_x * b_x) / ( a_x + b_x));  
     }/*for(j = k / 2; j < k; j++)*/
-
-	auto n4start = std::chrono::high_resolution_clock::now();
+	// jimmy's timing start
+	//auto n4start = std::chrono::high_resolution_clock::now();
 
     for(i = 0; i < sizeY; i++)
     {
@@ -262,11 +262,11 @@ int getFeatureMaps(const IplImage* image, const int k, CvLSVMFeatureMapCaskade *
         }/*for(ii = 0; ii < k; ii++)*/
       }/*for(j = 1; j < sizeX - 1; j++)*/
     }/*for(i = 1; i < sizeY - 1; i++)*/
-    
-    auto  n4end = std::chrono::high_resolution_clock::now();
+    //jimmy's timing end
+    //auto  n4end = std::chrono::high_resolution_clock::now();
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(n4end - n4start);
-    printf("Serial implementation completed in %lld ms\n", duration.count());
+    //auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(n4end - n4start);
+    //printf("Serial implementation completed in %lld ms\n", duration.count());
 
     cvReleaseImage(&dx);
     cvReleaseImage(&dy);
