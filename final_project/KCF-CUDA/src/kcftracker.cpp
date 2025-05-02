@@ -86,6 +86,8 @@ the use of this software, even if advised of the possibility of such damage.
 #include "recttools.hpp"
 #include "fhog.hpp"
 #include "labdata.hpp"
+#include "gaussianCorrelation.cuh"
+#include "normalizeAndTruncate.cuh"
 #endif
 //timing includes
 #include <chrono>
@@ -94,8 +96,9 @@ static double time_gaussian = 0.0;
 static double time_getFeatures = 0.0;
 static double time_train = 0.0;
 static double time_detect = 0.0;
+static double time_normAndTruncate = 0.0;
 static double time_getFeatureMaps = 0.0;
-
+static double time_cudaGaus = 0.0;
 // Constructor
 KCFTracker::KCFTracker(bool hog, bool fixed_window, bool multiscale, bool lab)
 {
@@ -175,7 +178,12 @@ void KCFTracker::init(const cv::Rect &roi, cv::Mat image)
     _alphaf = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
     //_num = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
     //_den = cv::Mat(size_patch[0], size_patch[1], CV_32FC2, float(0));
+        // create the workspace for 1 memAlloc and 1 free
+
+    initCUDAMem(ws, size_patch[0], size_patch[1], size_patch[2]);
+
     train(_tmpl, 1.0); // train with initial frame
+
  }
 // Update position based on the new frame
 cv::Rect KCFTracker::update(cv::Mat image)
@@ -237,12 +245,16 @@ cv::Rect KCFTracker::update(cv::Mat image)
 // Detect object in the current frame.
 cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 {
-  //timing start detect
+ //timing start detect
     auto start = std::chrono::high_resolution_clock::now();
-
     using namespace FFTTools;
-
-    cv::Mat k = gaussianCorrelation(x, z);
+    //Serial Imp Commented Out:	
+    //cv::Mat k = gaussianCorrelation(x, z);
+    //CUDA imp included:
+    auto start1 = std::chrono::high_resolution_clock::now();
+    cv::Mat k = gaussianCorrelationGPU(x, z, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
+    auto end1 = std::chrono::high_resolution_clock::now();
+    time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
     cv::Mat res = (real(fftd(complexMultiplication(_alphaf, fftd(k)), true)));
 
     //minMaxLoc only accepts doubles for the peak, and integer points for the coordinates
@@ -264,9 +276,10 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 
     p.x -= (res.cols) / 2;
     p.y -= (res.rows) / 2;
-    //timing end detect
+//timing end detect
     auto end = std::chrono::high_resolution_clock::now();
     time_detect += std::chrono::duration<double>(end - start).count();
+
     return p;
 }
 
@@ -274,16 +287,21 @@ cv::Point2f KCFTracker::detect(cv::Mat z, cv::Mat x, float &peak_value)
 void KCFTracker::train(cv::Mat x, float train_interp_factor)
 {
   //timing start train
-    auto start = std::chrono::high_resolution_clock::now();
-
+auto start = std::chrono::high_resolution_clock::now();
     using namespace FFTTools;
+    //Serial imp commented out
+    //cv::Mat k = gaussianCorrelation(x, x);
+    //CUDA imp included:
+    auto start1 = std::chrono::high_resolution_clock::now();
+    cv::Mat k = gaussianCorrelationGPU(x, x, size_patch[0], size_patch[1], size_patch[2], sigma, ws);
 
-    cv::Mat k = gaussianCorrelation(x, x);
+    auto end1 = std::chrono::high_resolution_clock::now();
+    time_cudaGaus += std::chrono::duration<double>(end1 - start1).count();
     cv::Mat alphaf = complexDivision(_prob, (fftd(k) + lambda));
     
     _tmpl = (1 - train_interp_factor) * _tmpl + (train_interp_factor) * x;
     _alphaf = (1 - train_interp_factor) * _alphaf + (train_interp_factor) * alphaf;
-    //timing end train
+//timing end train
     auto end = std::chrono::high_resolution_clock::now();
     time_train += std::chrono::duration<double>(end - start).count();
 
@@ -303,6 +321,7 @@ void KCFTracker::train(cv::Mat x, float train_interp_factor)
 cv::Mat KCFTracker::gaussianCorrelation(cv::Mat x1, cv::Mat x2)
 {
   //timing start gaussianCorrelation
+  //should be 0 here bc not called
     auto start = std::chrono::high_resolution_clock::now();
 
     using namespace FFTTools;
@@ -367,7 +386,6 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
 {
   //timing start getFeatures
     auto start = std::chrono::high_resolution_clock::now();
-
     cv::Rect extracted_roi;
 
     float cx = _roi.x + _roi.width / 2;
@@ -432,16 +450,17 @@ cv::Mat KCFTracker::getFeatures(const cv::Mat & image, bool inithann, float scal
     if (_hogfeatures) {
         IplImage z_ipl = z;
         CvLSVMFeatureMapCaskade *map;
-    
-    //timing start getFeatureMaps
-    auto start1 = std::chrono::high_resolution_clock::now();
-
-	getFeatureMaps(&z_ipl, cell_size, &map);
-
-    auto end1 = std::chrono::high_resolution_clock::now();
-    time_getFeatureMaps += std::chrono::duration<double>(end1 - start1).count();
-    
-	normalizeAndTruncateGPU(map,0.2f);
+	auto start1 = std::chrono::high_resolution_clock::now();
+        getFeatureMaps(&z_ipl, cell_size, &map);
+        auto end1 = std::chrono::high_resolution_clock::now();
+	time_getFeatureMaps += std::chrono::duration<double>(end1 - start1).count();
+	auto start2 = std::chrono::high_resolution_clock::now();
+	//serial call
+	//normalizeAndTruncate(map,0.2f);
+	//cuda call:
+	normalizeAndTruncateGPU(map, 0.2f);
+	auto end2 = std::chrono::high_resolution_clock::now();
+	time_normAndTruncate += std::chrono::duration<double>(end2 - start2).count();
         PCAFeatureMaps(map);
         size_patch[0] = map->sizeY;
         size_patch[1] = map->sizeX;
@@ -558,9 +577,15 @@ float KCFTracker::subPixelPeak(float left, float center, float right)
 //TIMING PRINT STATEMENTS
 void printProfilingSummary() {
     std::cout << "\n--- Function Timing Summary ---\n";
-    std::cout << "Total time spent in getFeatures():" << time_getFeatures << " s\n";
+    std::cout << "Total time spent in getFeatures(): " << time_getFeatures << " s\n";
     std::cout << "Total time spent in gaussianCorrelation(): " << time_gaussian << " s\n";
-    std::cout << "Total time spent in train(): " << time_train - time_getFeatures << " s\n";
-    std::cout << "Total time spent in detect(): " << time_detect - time_getFeatures  << " s\n";
-    std::cout << "Total time spent in getFeatureMaps():" << time_getFeatureMaps  << " s\n";
+    std::cout << "Total time spent in train(): " << time_train << " s\n";
+    std::cout << "Total time spent in detect(): " << time_detect << " s\n";
+    std::cout << "Total time spent in normalizeAndTruncate(): " << time_normAndTruncate << " s\n";
+    std::cout << "Total time spent in getFeatureMaps(): " << time_getFeatureMaps << " s\n";
+    std::cout << "Total time spent in gaussianCorrelation.cu: " <<time_cudaGaus << "s\n";
+}
+KCFTracker::~KCFTracker()
+{
+    freeCUDAMem(ws);
 }

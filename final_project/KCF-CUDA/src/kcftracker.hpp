@@ -83,8 +83,7 @@ the use of this software, even if advised of the possibility of such damage.
 #pragma once
 
 #include "tracker.h"
-#include "normalizeAndTruncate.cuh"
-
+#include "gaussianCorrelation.cuh"
 #ifndef _OPENCV_KCFTRACKER_HPP_
 #define _OPENCV_KCFTRACKER_HPP_
 #endif
@@ -94,6 +93,7 @@ class KCFTracker : public Tracker
 public:
     // Constructor
     KCFTracker(bool hog = true, bool fixed_window = true, bool multiscale = true, bool lab = true);
+    ~KCFTracker();
 
     // Initialize tracker 
     virtual void init(const cv::Rect &roi, cv::Mat image);
@@ -142,6 +142,7 @@ protected:
     cv::Mat _labCentroids;
 
 private:
+    GaussianCorrelationWorkspace ws;
     int size_patch[3];
     cv::Mat hann;
     cv::Size _tmpl_sz;
