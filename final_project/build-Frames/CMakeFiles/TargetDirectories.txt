@@ -1,3 +1,0 @@
-/home/u20/jimmypayan/ece569/final-project/build-Frames/CMakeFiles/Frames.dir
-/home/u20/jimmypayan/ece569/final-project/build-Frames/CMakeFiles/edit_cache.dir
-/home/u20/jimmypayan/ece569/final-project/build-Frames/CMakeFiles/rebuild_cache.dir
