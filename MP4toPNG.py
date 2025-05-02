@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# Ryan Raad 2025
+# The script we used to convert the video to images for the dataset.
+# Extracts frames from a video file and saves them as PNG images.
 import cv2
 import os
 import sys
@@ -44,7 +46,7 @@ def extract_frames(video_path, output_dir='./img'):
 if __name__ == "__main__":
     # Check for proper usage.
     if len(sys.argv) < 2:
-        print("Usage: python script.py <input_video.mp4>")
+        print("Usage: python MP4toPNG.py <input_video.mp4>")
         sys.exit(1)
 
     input_video = sys.argv[1]
